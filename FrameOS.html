@@ -1396,6 +1396,18 @@
     pointer-events: none;
   }
 
+  .vr-firestore-warn {
+    margin: -4px 8px 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 11px;
+    line-height: 1.45;
+    color: #fecaca;
+    background: rgba(127,29,29,0.35);
+    border: 1px solid rgba(248,113,113,0.35);
+    text-align: left;
+  }
+
   .vr-form-error {
     display: none;
     margin: 0 20px 12px;
@@ -1813,6 +1825,7 @@
               <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
             </div>
             <h3>VR-0045 submitted</h3>
+            <p id="vr-firestore-warn" class="vr-firestore-warn" style="display:none;" role="status"></p>
             <div class="meta">DBP Act audit trail auto-generated ✓</div>
             <div class="next-steps">
               <div class="h">What happens next</div>
@@ -1961,14 +1974,22 @@ const firebaseConfig = {
 };
 
 (function initFirebaseApp() {
-  if (typeof firebase === 'undefined') return;
+  if (typeof firebase === 'undefined') {
+    console.warn('[Firebase] SDK script missing (CDN blocked?).');
+    return;
+  }
   try {
     if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
     }
+    const db = firebase.firestore();
+    try {
+      db.settings({ experimentalAutoDetectLongPolling: true });
+    } catch (_) { /* settings only once / older SDK */ }
     try {
       firebase.analytics();
-    } catch (_) { /* Analytics unavailable (e.g. blocked / unsupported context) */ }
+    } catch (_) { /* iframe / blocker */ }
+    console.info('[Firebase] App + Firestore ready');
   } catch (e) {
     console.warn('[Firebase] init failed', e);
   }
@@ -1976,7 +1997,16 @@ const firebaseConfig = {
 
 /** Maps variation enquiry → Firestore `customer` schema (company, email, message, name, phone). */
 async function saveVariationToFirestoreCustomer(payload) {
-  if (typeof firebase === 'undefined' || !firebase.apps?.length) return;
+  if (typeof firebase === 'undefined') {
+    const e = new Error('Firebase SDK not loaded');
+    e.code = 'firebase-missing';
+    throw e;
+  }
+  if (!firebase.apps.length) {
+    const e = new Error('Firebase not initialized');
+    e.code = 'firebase-not-initialized';
+    throw e;
+  }
   const db = firebase.firestore();
   const message = [
     `[FrameOS Variation]`,
@@ -2305,6 +2335,8 @@ function openVrSheet() {
   document.getElementById('vr-form').style.display = 'block';
   document.getElementById('vr-success').style.display = 'none';
   if (errEl) { errEl.style.display = 'none'; errEl.textContent = ''; }
+  const fbWarn = document.getElementById('vr-firestore-warn');
+  if (fbWarn) { fbWarn.style.display = 'none'; fbWarn.textContent = ''; }
   ov.classList.add('show');
   requestAnimationFrame(() => sh.classList.add('show'));
 }
@@ -2396,14 +2428,32 @@ async function submitVariation() {
       showVrFormError(detail);
       return;
     }
+    let firestoreErr = null;
     try {
       await saveVariationToFirestoreCustomer(payload);
     } catch (fbErr) {
-      console.warn('[Firestore] customer write failed', fbErr);
+      firestoreErr = fbErr;
+      console.error('[Firestore] customer write failed', fbErr?.code, fbErr?.message, fbErr);
     }
     saveEnquiryLocal(payload);
     document.getElementById('vr-form').style.display = 'none';
     document.getElementById('vr-success').style.display = 'block';
+    const fbWarn = document.getElementById('vr-firestore-warn');
+    if (fbWarn) {
+      if (firestoreErr) {
+        fbWarn.style.display = 'block';
+        if (firestoreErr.code === 'permission-denied') {
+          fbWarn.textContent = 'Cloud DB(Firestore) 저장이 거부됐습니다. Firebase 콘솔 → Firestore → 규칙에 이 프로젝트의 firestore.rules 내용을 반영해 주세요(비로그인 create 허용).';
+        } else if (firestoreErr.code === 'unavailable' || firestoreErr.code === 'failed-precondition') {
+          fbWarn.textContent = 'Firestore를 사용할 수 없습니다. Firebase 콘솔에서 Firestore 데이터베이스를 생성했는지 확인하세요.';
+        } else {
+          fbWarn.textContent = 'Cloud DB 동기화 실패: ' + (firestoreErr.message || firestoreErr.code || 'unknown');
+        }
+      } else {
+        fbWarn.style.display = 'none';
+        fbWarn.textContent = '';
+      }
+    }
     document.getElementById('vr-sheet').scrollTop = 0;
   } catch (e) {
     showVrFormError('네트워크 오류입니다. 연결과 Formspree 설정을 확인해 주세요.');

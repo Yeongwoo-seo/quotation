@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Next Gen. Steel Frame and Trusses — Steel Realize Potential</title>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>window.APP_CONFIG = window.APP_CONFIG || {};</script>
+<script src="./app-config.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased;}
+:root{
+  --black:#080808;--dark2:#161616;--dark3:#1e1e1e;
+  --white:#f5f5f7;--dim:rgba(245,245,247,0.5);--dim2:rgba(245,245,247,0.22);
+  --em:#A8E6CF;--em-dim:rgba(168,230,207,0.12);--em-b:rgba(168,230,207,0.2);
+  --blue:#5BB8D4;--blue-dim:rgba(91,184,212,0.12);--blue-b:rgba(91,184,212,0.25);
+  --border:rgba(255,255,255,0.08);--grid:rgba(255,255,255,0.035);
+}
+html{scroll-behavior:smooth;background:#080808;}
+body{background:#080808;color:var(--white);font-family:'Pretendard',-apple-system,sans-serif;overflow-x:hidden;}
+/* 모든 요소 기본 배경 검정 */
+main,article,aside,div:not([class]){background:transparent;}
+.grid-bg{position:fixed;inset:0;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:44px 44px;pointer-events:none;z-index:0;}
+
+/* NAV */
+header{position:fixed;top:0;left:0;right:0;z-index:100;padding:22px 28px;display:flex;align-items:center;background:linear-gradient(to bottom,rgba(8,8,8,0.95),transparent);}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo-icon{width:28px;height:28px;}
+.logo-text{font-size:11px;font-weight:700;letter-spacing:1.1px;color:var(--white);text-transform:uppercase;line-height:1.15;}
+.nav-links{display:none;}
+
+/* SECTIONS */
+section{position:relative;z-index:1;padding:110px 28px 64px;background:#080808;}
+.divider{height:1px;background:var(--border);position:relative;z-index:1;}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(32px);transition:opacity 0.8s cubic-bezier(0.16,1,0.3,1),transform 0.8s cubic-bezier(0.16,1,0.3,1);}
+.reveal.on{opacity:1;transform:none;}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}.d4{transition-delay:.4s}
+@keyframes su{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
+@keyframes fi{from{opacity:0}to{opacity:1}}
+
+/* HERO */
+#hero{min-height:100dvh;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:80px;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;z-index:0;background:#080808;}
+.hero-canvas-wrap{position:absolute;inset:0;z-index:1;}
+#heroCanvas{width:100%;height:100%;display:block;}
+.hero-content{position:relative;z-index:2;}
+.hero-label{font-size:10px;font-weight:500;letter-spacing:3px;color:var(--em);text-transform:uppercase;margin-bottom:24px;opacity:0;animation:su .8s ease forwards .4s;}
+.hero-hl{font-size:clamp(68px,19vw,92px);font-weight:800;line-height:.92;letter-spacing:-2px;margin-bottom:28px;}
+.hero-hl .l1{display:block;color:var(--white);opacity:0;animation:su .9s cubic-bezier(.16,1,.3,1) forwards .55s;}
+.hero-hl .l2{display:block;-webkit-text-stroke:1.5px rgba(245,245,247,.32);color:transparent;opacity:0;animation:su .9s cubic-bezier(.16,1,.3,1) forwards .7s;}
+.hero-hl .l3{display:block;color:var(--em);opacity:0;animation:su .9s cubic-bezier(.16,1,.3,1) forwards .85s;}
+.hero-sub{font-size:15px;font-weight:300;color:var(--dim);line-height:1.7;max-width:340px;margin-bottom:36px;opacity:0;animation:su .9s ease forwards 1.05s;}
+.hero-cta{display:inline-flex;align-items:center;gap:8px;background:var(--em);color:#000;font-size:13px;font-weight:700;letter-spacing:.5px;padding:14px 28px;border-radius:100px;text-decoration:none;opacity:0;animation:su .9s ease forwards 1.15s;transition:transform .2s;}
+.hero-cta:active{transform:scale(.97);}
+.scroll-ind{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;opacity:0;animation:fi 1s ease forwards 1.7s;z-index:2;}
+.scroll-line{width:1px;height:36px;background:linear-gradient(to bottom,var(--em),transparent);animation:pulse 2s ease-in-out infinite;}
+.scroll-txt{font-size:9px;letter-spacing:2.5px;color:var(--dim2);text-transform:uppercase;}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+
+/* SECTION COMMON */
+.sec-tag{font-size:10px;font-weight:500;letter-spacing:3px;color:var(--em);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.sec-tag::before{content:'';width:18px;height:1px;background:var(--em);}
+.sec-title{font-size:clamp(34px,9vw,50px);font-weight:800;letter-spacing:-1px;line-height:1.05;margin-bottom:16px;}
+.sec-sub{font-size:15px;font-weight:300;color:var(--dim);line-height:1.7;margin-bottom:44px;}
+
+/* CARD */
+.card{background:var(--dark2);border:1px solid var(--border);border-radius:18px;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;width:22px;height:22px;border-top:1.5px solid var(--em);border-left:1.5px solid var(--em);border-radius:18px 0 0 0;opacity:.7;}
+.card::after{content:'';position:absolute;bottom:0;right:0;width:22px;height:22px;border-bottom:1.5px solid var(--em);border-right:1.5px solid var(--em);border-radius:0 0 18px 0;opacity:.7;}
+.card-blue::before{border-color:var(--blue);}
+.card-blue::after{border-color:var(--blue);}
+
+/* COMPANY */
+#company{padding-top:80px;}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:28px;}
+.stat-card{padding:22px 18px;}
+.stat-num{font-size:38px;font-weight:800;letter-spacing:-1px;line-height:1;margin-bottom:4px;}
+.stat-num em{color:var(--em);font-style:normal;font-size:26px;}
+.stat-lbl{font-size:11px;color:var(--dim);font-weight:400;line-height:1.4;}
+.str-list{display:flex;flex-direction:column;}
+.str-item{display:flex;align-items:flex-start;gap:14px;padding:18px 0;border-bottom:1px solid var(--border);}
+.str-item:last-child{border-bottom:none;}
+.str-icon{width:34px;height:34px;background:#1a2a22;border:1px solid var(--em-b);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px;}
+.str-title{font-size:14px;font-weight:600;margin-bottom:3px;}
+.str-desc{font-size:12px;color:var(--dim);font-weight:300;line-height:1.5;}
+
+/* SOLUTION */
+#solution{padding-top:80px;}
+.type-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:0;background:var(--dark2);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:24px;}
+.type-tab{text-align:center;padding:9px 4px;font-size:11px;font-weight:600;color:var(--dim);border-radius:9px;cursor:pointer;transition:all .25s;letter-spacing:.3px;}
+.type-tab.active{background:var(--dark3);color:var(--white);border:1px solid var(--border);}
+.sliders{display:flex;flex-direction:column;gap:18px;margin-bottom:18px;}
+.sl-row{display:flex;flex-direction:column;gap:7px;}
+.sl-head{display:flex;justify-content:space-between;align-items:baseline;}
+.sl-label{font-size:11px;font-weight:500;color:var(--dim);letter-spacing:1.5px;text-transform:uppercase;}
+.sl-val{font-size:20px;font-weight:700;color:var(--white);letter-spacing:-.5px;}
+.sl-val span{font-size:12px;font-weight:400;color:var(--dim);}
+input[type=range]{-webkit-appearance:none;width:100%;height:3px;background:linear-gradient(to right,var(--em) var(--pct,0%),var(--border) var(--pct,0%));border-radius:2px;outline:none;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;background:var(--em);border-radius:50%;cursor:pointer;box-shadow:0 0 12px rgba(168,230,207,.45);}
+.sqm-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--em-dim);border:1px solid var(--em-b);border-radius:10px;margin-bottom:18px;}
+.sqm-label{font-size:11px;font-weight:500;color:var(--em);letter-spacing:1.5px;text-transform:uppercase;}
+.sqm-val{font-size:18px;font-weight:800;color:var(--em);}
+.canvas-wrap{border:1px solid var(--border);border-radius:18px;overflow:hidden;margin-bottom:18px;position:relative;background:#080808;}
+#lgsCanvas{display:block;width:100%;height:312px;background:#080808;}
+.canvas-hint{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:9px;letter-spacing:2px;color:var(--dim2);text-transform:uppercase;white-space:nowrap;}
+.zoom-btns{position:absolute;top:12px;right:12px;display:flex;flex-direction:column;gap:6px;}
+.zoom-btn{width:32px;height:32px;background:rgba(8,8,8,0.85);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:var(--white);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color .2s,color .2s;user-select:none;}
+.zoom-btn:hover{border-color:var(--em);color:var(--em);}
+.zoom-btn:active{transform:scale(.93);}
+.quote-card{padding:22px 20px;margin-bottom:16px;}
+.q-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);}
+.q-row:last-child{border-bottom:none;padding-top:14px;}
+.q-label{font-size:12px;color:var(--dim);}
+.q-val{font-size:14px;font-weight:600;color:var(--white);}
+.q-total .q-label{font-size:14px;font-weight:700;color:var(--white);}
+.q-total .q-val{font-size:24px;font-weight:800;color:var(--em);letter-spacing:-.5px;}
+.btn-em{display:block;width:100%;padding:16px;background:var(--em);color:#000;font-size:14px;font-weight:700;text-align:center;border-radius:14px;border:none;cursor:pointer;transition:transform .2s;text-decoration:none;}
+.btn-em:active{transform:scale(.98);}
+.btn-ghost{display:block;width:100%;padding:15px;background:transparent;color:var(--em);font-size:14px;font-weight:600;text-align:center;border-radius:14px;border:1px solid var(--em-b);cursor:pointer;transition:background .2s,transform .2s;text-decoration:none;margin-top:10px;}
+.btn-ghost:active{background:var(--em-dim);transform:scale(.98);}
+.saas-card{padding:26px 22px;margin-bottom:24px;}
+.saas-badge{display:inline-block;background:var(--blue-dim);border:1px solid var(--blue-b);color:var(--blue);font-size:10px;font-weight:600;letter-spacing:2px;padding:5px 12px;border-radius:100px;text-transform:uppercase;margin-bottom:16px;}
+.saas-title{font-size:24px;font-weight:800;letter-spacing:-.5px;line-height:1.15;margin-bottom:10px;}
+.saas-desc{font-size:14px;color:var(--dim);font-weight:300;line-height:1.65;}
+.platform-showcase{display:flex;flex-direction:column;gap:22px;margin-bottom:24px;}
+.mock-switch{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding:0 2px 2px;margin-bottom:10px;}
+.mock-switch::-webkit-scrollbar{display:none;}
+.mock-btn{flex:0 0 auto;border:1px solid var(--border);background:var(--dark2);color:var(--dim);border-radius:999px;padding:9px 12px;font-size:11px;font-weight:700;font-family:'Pretendard',sans-serif;cursor:pointer;}
+.mock-btn.active{background:var(--blue-dim);border-color:var(--blue-b);color:var(--blue);}
+.iphone-mock{width:100%;max-width:390px;margin:0 auto;padding:0;border-radius:0;background:transparent;border:0;box-shadow:none;overflow:hidden;}
+.iphone-screen{height:630px;border-radius:30px;overflow:hidden;background:#08111b;border:1px solid rgba(255,255,255,.08);position:relative;color:#f4f8fb;font-family:'Pretendard',-apple-system,sans-serif;}
+.frameos-live-shell{width:100%;aspect-ratio:390/844;border-radius:44px;overflow:hidden;background:#050a10;position:relative;border:1px solid rgba(255,255,255,.12);box-shadow:0 22px 46px rgba(0,0,0,.45),0 0 0 2px rgba(255,255,255,.04) inset;}
+.frameos-live-shell::before{content:'';position:absolute;left:50%;top:9px;transform:translateX(-50%);width:118px;height:26px;border-radius:20px;background:#02060a;z-index:3;pointer-events:none;}
+.frameos-live-shell::after{content:'';position:absolute;inset:0;border-radius:44px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08),inset 0 22px 40px rgba(91,184,212,.07);pointer-events:none;z-index:3;}
+.frameos-live{position:absolute;inset:10px;width:calc(100% - 20px);height:calc(100% - 20px);border:0;border-radius:34px;background:#08111b;}
+.frameos-example-note{font-size:11px;color:var(--dim);font-weight:300;line-height:1.55;text-align:center;margin-top:12px;}
+.iphone-notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:88px;height:24px;background:#000;border-radius:18px;z-index:4;}
+.mini-status{height:42px;padding:12px 20px 0;display:flex;justify-content:space-between;align-items:flex-start;font-size:12px;font-weight:700;position:relative;z-index:3;}
+.mini-app{height:calc(100% - 42px);padding:14px 15px 72px;background:radial-gradient(260px 120px at 50% 0,rgba(91,184,212,.18),transparent 70%),#08111b;overflow:hidden;}
+.mini-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.mini-brand{font-size:16px;font-weight:800;letter-spacing:.2px;}
+.mini-pill{font-size:10px;color:#9fb0c2;border:1px solid rgba(255,255,255,.1);background:rgba(17,28,42,.82);border-radius:999px;padding:6px 9px;}
+.mini-hero{border:1px solid rgba(91,184,212,.22);border-radius:18px;padding:14px;background:linear-gradient(135deg,rgba(91,184,212,.13),rgba(168,230,207,.07) 45%,rgba(17,28,42,.92));margin-bottom:12px;}
+.mini-eyebrow{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:#69d5e7;font-weight:800;margin-bottom:8px;}
+.mini-title{font-size:19px;font-weight:850;line-height:1.1;margin-bottom:8px;}
+.mini-copy{font-size:11px;line-height:1.45;color:#8da0b3;}
+.mini-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:12px;}
+.mini-kpi{background:rgba(8,17,27,.62);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:8px;}
+.mini-kpi b{font-size:16px;display:block;}
+.mini-kpi span{font-size:9px;color:#9fb0c2;}
+.mini-route{border:1px solid rgba(255,255,255,.08);background:#111c2a;border-radius:16px;padding:12px;margin-bottom:12px;}
+.mini-route-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.mini-route-head span{font-size:10px;text-transform:uppercase;letter-spacing:1.3px;color:#8da0b3;font-weight:700;}
+.mini-route-head b{font-size:18px;color:#f2a91b;}
+.mini-route-line{height:5px;border-radius:999px;background:#24384d;overflow:hidden;margin-bottom:10px;}
+.mini-route-line i{display:block;width:72%;height:100%;background:#f2a91b;border-radius:999px;}
+.mini-driver{display:flex;align-items:center;gap:9px;font-size:11px;color:#8da0b3;}
+.mini-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#203247;color:#f4f8fb;font-size:11px;font-weight:800;}
+.mini-card{border:1px solid rgba(255,255,255,.08);background:#111c2a;border-radius:16px;padding:12px;}
+.mini-row{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;}
+.mini-id{font-size:10px;color:#8da0b3;margin-bottom:3px;}
+.mini-name{font-size:13px;font-weight:750;line-height:1.25;}
+.mini-tag{font-size:9px;font-weight:800;color:#5bb8d4;background:rgba(91,184,212,.14);border-radius:999px;padding:4px 8px;}
+.mini-progress{height:5px;border-radius:999px;background:#24384d;margin:11px 0 8px;overflow:hidden;}
+.mini-progress i{display:block;width:52%;height:100%;background:#f2a91b;border-radius:999px;}
+.mini-meta{display:flex;justify-content:space-between;color:#9fb0c2;font-size:10px;}
+.mock-screen{display:none;animation:mockSlide .24s ease;}
+.mock-screen.active{display:block;}
+@keyframes mockSlide{from{opacity:.25;transform:translateX(12px)}to{opacity:1;transform:none}}
+.mini-minihead{font-size:10px;color:#8da0b3;text-transform:uppercase;letter-spacing:1.2px;font-weight:800;margin:0 0 8px;}
+.mini-list{display:flex;flex-direction:column;gap:8px;}
+.mini-map{height:255px;border-radius:18px;border:1px solid rgba(255,255,255,.08);background:linear-gradient(135deg,#07101a,#142337);position:relative;overflow:hidden;margin-bottom:10px;}
+.mini-map::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:30px 30px;}
+.mini-path{position:absolute;left:24px;right:24px;top:42px;height:160px;border-left:3px dashed #f2a91b;border-bottom:3px dashed #f2a91b;border-radius:0 0 0 18px;}
+.mini-truck{position:absolute;right:62px;top:112px;width:42px;height:42px;border-radius:50%;background:#f2a91b;color:#08111b;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;box-shadow:0 0 0 8px rgba(242,169,27,.16);}
+.mini-sheet{border:1px solid rgba(255,255,255,.08);background:#111c2a;border-radius:18px;padding:13px;margin-top:-42px;position:relative;z-index:2;}
+.mini-var-card,.mini-msg-card{border:1px solid rgba(255,255,255,.08);background:#111c2a;border-radius:15px;padding:11px;}
+.mini-var-card+.mini-var-card,.mini-msg-card+.mini-msg-card{margin-top:8px;}
+.mini-var-title,.mini-msg-name{font-size:12px;font-weight:800;margin-bottom:4px;}
+.mini-var-sub,.mini-msg-prev{font-size:10px;color:#8da0b3;line-height:1.35;}
+.mini-msg-card{display:flex;align-items:center;gap:9px;}
+.mini-composer{margin-top:10px;border:1px solid rgba(255,255,255,.08);border-radius:999px;background:#111c2a;color:#8da0b3;font-size:10px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;}
+.mini-tabs{position:absolute;left:0;right:0;bottom:0;height:66px;background:rgba(8,17,27,.94);border-top:1px solid rgba(255,255,255,.08);display:grid;grid-template-columns:repeat(5,1fr);padding:8px 8px 12px;}
+.mini-tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#8da0b3;font-size:9px;}
+.mini-tab.active{color:#f2a91b;background:rgba(242,169,27,.1);border-radius:13px;}
+.mini-tab{border:0;background:transparent;font-family:'Pretendard',sans-serif;cursor:pointer;}
+.mini-dot-icon{width:16px;height:16px;border:1.5px solid currentColor;border-radius:5px;}
+.saas-note{font-size:12px;color:var(--dim);font-weight:300;line-height:1.6;text-align:center;margin-top:-8px;}
+.feat-list{display:flex;flex-direction:column;margin-bottom:24px;}
+.feat-item{display:flex;align-items:flex-start;gap:14px;padding:16px 0;border-bottom:1px solid var(--border);}
+.feat-item:last-child{border-bottom:none;}
+.feat-dot{width:6px;height:6px;background:var(--blue);border-radius:50%;margin-top:5px;flex-shrink:0;}
+.feat-title{font-size:14px;font-weight:600;margin-bottom:2px;}
+.feat-desc{font-size:12px;color:var(--dim);font-weight:300;line-height:1.5;}
+.btn-blue{display:block;width:100%;padding:16px;background:var(--blue);color:#000;font-size:14px;font-weight:700;text-align:center;border-radius:14px;border:none;cursor:pointer;transition:transform .2s;text-decoration:none;}
+.btn-blue:active{transform:scale(.98);}
+
+/* CONTACT */
+#contact{padding-top:80px;}
+.partner-card{padding:26px 22px;margin-bottom:18px;background:linear-gradient(145deg,rgba(168,230,207,.11),rgba(22,22,22,.96));}
+.partner-kicker{display:inline-block;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--em);border:1px solid var(--em-b);background:var(--em-dim);border-radius:999px;padding:5px 11px;margin-bottom:16px;font-weight:700;}
+.partner-title{font-size:28px;font-weight:850;line-height:1.08;letter-spacing:-.7px;margin-bottom:12px;}
+.partner-sub{font-size:14px;color:var(--dim);line-height:1.65;font-weight:300;margin-bottom:18px;}
+.partner-sub b{color:var(--white);font-weight:700;}
+.cta-split{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.btn-partner{display:block;width:100%;padding:16px;background:var(--blue);color:#000;font-size:14px;font-weight:800;text-align:center;border-radius:14px;border:none;cursor:pointer;transition:transform .2s;text-decoration:none;}
+.btn-partner:active{transform:scale(.98);}
+.partner-form{display:block;margin-top:16px;padding:18px;border:1px solid var(--blue-b);background:rgba(91,184,212,.06);border-radius:18px;}
+.partner-form .form-wrap{margin-bottom:14px;}
+.form-note{font-size:12px;color:var(--blue);line-height:1.5;margin-top:10px;}
+.form-status{font-size:12px;line-height:1.45;margin-top:10px;min-height:18px;}
+.form-status.ok{color:var(--em);}
+.form-status.err{color:#ff8d8d;}
+.form-wrap{display:flex;flex-direction:column;gap:12px;margin-bottom:20px;}
+.f-group{display:flex;flex-direction:column;gap:7px;}
+.f-label{font-size:10px;font-weight:500;letter-spacing:2px;color:var(--dim);text-transform:uppercase;}
+.f-input{background:var(--dark2);border:1px solid var(--border);border-radius:12px;padding:15px 16px;color:var(--white);font-size:15px;font-family:'Pretendard',sans-serif;font-weight:400;outline:none;transition:border-color .2s;-webkit-appearance:none;}
+.f-input:focus{border-color:var(--em-b);}
+.f-input::placeholder{color:var(--dim2);}
+textarea.f-input{resize:none;height:96px;line-height:1.55;}
+.alt-btns{display:flex;flex-direction:column;gap:10px;margin-top:14px;}
+.alt-btn{display:flex;align-items:center;justify-content:center;gap:10px;padding:15px;border-radius:14px;font-size:14px;font-weight:600;text-decoration:none;border:1px solid var(--border);background:var(--dark2);color:var(--white);transition:border-color .25s,transform .15s;}
+.alt-btn:active{transform:scale(.98);}
+
+/* FOOTER */
+footer{position:relative;z-index:1;padding:36px 28px 48px;border-top:1px solid var(--border);text-align:center;background:var(--black);}
+.ft-logo{font-size:12px;font-weight:700;letter-spacing:3px;color:var(--dim2);text-transform:uppercase;margin-bottom:8px;}
+.ft-tag{font-size:12px;color:var(--em);font-weight:500;letter-spacing:1px;margin-bottom:12px;}
+.ft-copy{font-size:11px;color:var(--dim2);font-weight:300;line-height:1.6;}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<header>
+  <a href="#hero" class="logo">
+    <svg class="logo-icon" viewBox="0 0 28 28" fill="none">
+      <rect x="1" y="1" width="26" height="26" stroke="#A8E6CF" stroke-width="1.5"/>
+      <line x1="1" y1="1" x2="27" y2="27" stroke="#A8E6CF" stroke-width=".8"/>
+      <line x1="27" y1="1" x2="1" y2="27" stroke="#A8E6CF" stroke-width=".8"/>
+      <rect x="9" y="9" width="10" height="10" fill="#A8E6CF" opacity=".5"/>
+    </svg>
+    <span class="logo-text">Next Gen. Steel<br>Frame & Trusses</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#company">Company</a></li>
+    <li><a href="#solution">Solution</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</header>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-canvas-wrap"><canvas id="heroCanvas"></canvas></div>
+  <div class="hero-content">
+    <p class="hero-label">Light Gauge Steel Construction System</p>
+    <h1 class="hero-hl">
+      <span class="l1">STEEL</span>
+      <span class="l2">REALIZE</span>
+      <span class="l3">POTENTIAL</span>
+    </h1>
+    <p class="hero-sub">The future of construction isn't coming —<br>it's already being built.</p>
+    <a href="#solution" class="hero-cta">Explore Our Solution →</a>
+  </div>
+  <div class="scroll-ind">
+    <div class="scroll-line"></div>
+    <span class="scroll-txt">Scroll</span>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- COMPANY -->
+<section id="company">
+  <div class="sec-tag reveal">Our Company</div>
+  <h2 class="sec-title reveal d1">Day one.<br>Built different.</h2>
+  <p class="sec-sub reveal d2">We're not here to do what's already been done. Next Gen. Steel Frame and Trusses brings precision engineering and intelligent technology to a construction industry that's ready for change.</p>
+  <div class="stats-grid">
+    <div class="card stat-card reveal d1"><div class="stat-num"><span style="color:var(--em);font-size:26px;font-weight:800;">NOW</span></div><div class="stat-lbl">Taking on<br>First Projects</div></div>
+    <div class="card stat-card reveal d2"><div class="stat-num"><span style="color:var(--em);font-size:22px;font-weight:800;">LGS</span></div><div class="stat-lbl">Specialist<br>Focus</div></div>
+    <div class="card stat-card reveal d3"><div class="stat-num"><span class="ctr" data-t="100">0</span><em>%</em></div><div class="stat-lbl">Tech-Driven<br>Delivery</div></div>
+    <div class="card stat-card reveal d4"><div class="stat-num"><span style="color:var(--em);font-size:22px;font-weight:800;">AU</span></div><div class="stat-lbl">Sydney<br>Based</div></div>
+  </div>
+  <div class="str-list">
+    <div class="str-item reveal"><div class="str-icon">🚀</div><div><div class="str-title">Fresh Eyes, Proven System</div><div class="str-desc">New company, but built on established LGS engineering standards and real industry knowledge</div></div></div>
+    <div class="str-item reveal d2"><div class="str-icon">🤝</div><div><div class="str-title">Every Client Matters</div><div class="str-desc">As a new business, your project gets our full attention — not just a number in a queue</div></div></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SOLUTION -->
+<section id="solution">
+  <div class="sec-tag reveal">Our Solution</div>
+  <h2 class="sec-title reveal d1">One system.<br>Infinite structures.</h2>
+  <p class="sec-sub reveal d2">From a single input to a complete build — automated, visualised, delivered.</p>
+
+  <div class="type-tabs reveal d3">
+    <div class="type-tab active" onclick="setType('single',this)">Single</div>
+    <div class="type-tab" onclick="setType('double',this)">Double</div>
+    <div class="type-tab" onclick="setType('granny',this)">Granny</div>
+    <div class="type-tab" onclick="setType('duplex',this)">Duplex</div>
+  </div>
+
+  <div class="sliders reveal d3">
+    <div class="sl-row">
+      <div class="sl-head"><span class="sl-label">Width</span><span class="sl-val" id="vw">10.0<span> m</span></span></div>
+      <input type="range" id="sw" min="6" max="20" step="0.1" value="10" oninput="onSlider()">
+    </div>
+    <div class="sl-row">
+      <div class="sl-head"><span class="sl-label">Depth</span><span class="sl-val" id="vd">8.0<span> m</span></span></div>
+      <input type="range" id="sd" min="6" max="16" step="0.1" value="8" oninput="onSlider()">
+    </div>
+  </div>
+
+  <div class="sqm-bar reveal d3">
+    <span class="sqm-label">Total Floor Area</span>
+    <span class="sqm-val" id="sqm-val">80 sqm</span>
+  </div>
+
+  <div class="canvas-wrap reveal d4">
+    <canvas id="lgsCanvas" width="720" height="1040"></canvas>
+    <div class="canvas-hint">drag to rotate · pinch to zoom</div>
+    <div class="zoom-btns">
+      <div class="zoom-btn" onclick="zoomStep(0.15)">+</div>
+      <div class="zoom-btn" onclick="zoomStep(-0.15)">-</div>
+    </div>
+  </div>
+
+  <div class="card quote-card reveal d4">
+    <div class="q-row"><span class="q-label">Floor Area</span><span class="q-val" id="q-sqm">-</span></div>
+    <div class="q-row q-total"><span class="q-label">Estimated Total</span><span class="q-val" id="q-tot">-</span></div>
+  </div>
+
+  <!-- SAAS -->
+  <div style="margin-top:36px;">
+    <div class="sec-tag reveal">SaaS Platform</div>
+    <div class="platform-showcase">
+      <div class="card card-blue saas-card reveal d1">
+        <div class="saas-badge">FrameOS Preview</div>
+        <div class="saas-title">Every build.<br>One operating system.</div>
+        <div class="saas-desc">The most important parts of FrameOS: live project status, delivery tracking, package progress and builder coordination — designed for the people actually running the job.</div>
+      </div>
+
+      <div class="iphone-mock reveal d2" aria-label="FrameOS mobile app preview">
+        <div class="frameos-live-shell">
+          <iframe class="frameos-live" id="frameos-live" src="FrameOS.html" title="FrameOS live mobile preview" loading="lazy" scrolling="no"></iframe>
+        </div>
+      </div>
+
+      <div class="frameos-example-note reveal d3">Example screen only. FrameOS includes dashboard, packages, delivery, variations and messenger views.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="sec-tag reveal">Contact Us</div>
+  <h2 class="sec-title reveal d1">Leave a note.<br>We'll take it<br>from there.</h2>
+  <p class="sec-sub reveal d2">Whether you're planning a build, comparing systems, or just curious about steel frames, leave your details and we'll come back with the next sensible step.</p>
+
+  <div class="card partner-card reveal d2">
+    <div class="partner-kicker">Quick Enquiry</div>
+    <div class="partner-title">Got a project in mind?<br>Drop us the basics.</div>
+    <div class="partner-sub">If you're interested in steel framing, leave your details. We'll keep it simple and reply by email when there's something useful to discuss.</div>
+
+    <form class="partner-form" id="contact-form" onsubmit="sendEnquiryEmail(event)">
+      <div class="form-wrap">
+        <div class="f-group"><label class="f-label">Company</label><input type="text" name="company" class="f-input" placeholder="Company name"></div>
+        <div class="f-group"><label class="f-label">Name</label><input type="text" name="name" class="f-input" placeholder="John Smith" required></div>
+        <div class="f-group"><label class="f-label">Phone</label><input type="tel" name="phone" class="f-input" placeholder="+61 4XX XXX XXX"></div>
+        <div class="f-group"><label class="f-label">Email</label><input type="email" name="email" class="f-input" placeholder="john@example.com.au" required></div>
+        <div class="f-group"><label class="f-label">Message</label><textarea name="message" class="f-input" placeholder="Tell us about your project, site, or what you're exploring..." required></textarea></div>
+      </div>
+      <button class="btn-blue" type="submit">Send Enquiry</button>
+      <div class="form-status" id="form-status" aria-live="polite"></div>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="ft-logo">Next Gen. Steel Frame and Trusses</div>
+  <div class="ft-tag">Steel Realize Potential.</div>
+</footer>
+
+<script>
+// ══════════════════════════════════════════════
+// CONSTANTS
+// Y축: 0=바닥, 위로 갈수록 양수. 투영 시 sy를 반전해서 위=화면위
+// ══════════════════════════════════════════════
+const SH = 2.4;   // storey height
+const SS = 0.6;   // stud spacing
+const TS = 0.6;   // truss spacing
+
+let houseType = 'single';
+let BW = 10, BD = 8;
+let rotX = 0.38, rotY = 0.5;
+let drag = false, lx = 0, ly = 0;
+let zoomFactor = 1.0;
+const ZOOM_MIN = 0.4, ZOOM_MAX = 3.0;
+
+// ── Reveal ──
+const obs = new IntersectionObserver(es => {
+  es.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('on');
+      e.target.querySelectorAll('.ctr').forEach(c => { if (!c.dataset.done) animCtr(c); });
+    }
+  });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+function showPartnerForm(){
+  const form = document.getElementById('partner-form');
+  if (!form) return;
+  form.classList.add('show');
+  form.scrollIntoView({ behavior:'smooth', block:'center' });
+}
+
+function setFrameMock(name){
+  document.querySelectorAll('[data-mock-screen]').forEach(el => el.classList.toggle('active', el.dataset.mockScreen === name));
+  document.querySelectorAll('[data-mock-btn]').forEach(el => el.classList.toggle('active', el.dataset.mockBtn === name));
+  document.querySelectorAll('[data-mock-tab]').forEach(el => el.classList.toggle('active', el.dataset.mockTab === name));
+}
+
+function setFrameOSLive(tabName){
+  document.querySelectorAll('[data-frameos-btn]').forEach(el => el.classList.toggle('active', el.dataset.frameosBtn === tabName));
+  const frame = document.getElementById('frameos-live');
+  if (!frame) return;
+  const applyTab = () => {
+    try {
+      if (frame.contentWindow && typeof frame.contentWindow.switchTab === 'function') {
+        frame.contentWindow.switchTab(tabName);
+      }
+    } catch (e) {
+      // Same-folder file previews can call into FrameOS; if the browser blocks it, the embedded app still works manually.
+    }
+  };
+  if (frame.contentDocument && frame.contentDocument.readyState === 'complete') applyTab();
+  else frame.addEventListener('load', applyTab, { once:true });
+}
+
+function sendEnquiryEmail(event){
+  event.preventDefault();
+  const form = event.currentTarget;
+  const data = new FormData(form);
+  const submitBtn = form.querySelector('button[type="submit"]');
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending...';
+  }
+  fetch('https://formsubmit.co/ajax/eddyseo3372@gmail.com', {
+    method: 'POST',
+    headers: { 'Accept': 'application/json' },
+    body: data
+  })
+  .then(res => {
+    if (!res.ok) throw new Error('Failed to send enquiry.');
+    return res.json();
+  })
+  .then(() => {
+    alert('Enquiry sent successfully. Thank you!');
+    form.reset();
+  })
+  .catch(() => {
+    alert('Could not send enquiry right now. Please try again.');
+  })
+  .finally(() => {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Send Enquiry';
+    }
+  });
+}
+
+function animCtr(el) {
+  el.dataset.done = 1;
+  const t = +el.dataset.t, dur = 1200, s = performance.now();
+  (function step(now) {
+    const p = Math.min((now - s) / dur, 1), e = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.round(e * t);
+    if (p < 1) requestAnimationFrame(step); else el.textContent = t;
+  })(s);
+}
+
+// ── 3D Projection ──
+// Y가 클수록 화면 위쪽: sy에서 y항 빼기 (sy = cy - y2*scale*s)
+function proj(x, y, z, cx, cy, sc, rX, rY) {
+  const cX = Math.cos(rX), sX = Math.sin(rX);
+  const cY = Math.cos(rY), sY = Math.sin(rY);
+  const x2 = x * cY - z * sY;
+  const z2 = x * sY + z * cY;
+  const y2 = y * cX - z2 * sX;
+  const z3 = y * sX + z2 * cX;
+  const fov = 600, s = fov / (fov + z3 + 2);
+  return { sx: cx + x2 * sc * s, sy: cy - y2 * sc * s };
+}
+
+function ln(ctx, a, b, col, lw) {
+  ctx.strokeStyle = col; ctx.lineWidth = lw;
+  ctx.beginPath(); ctx.moveTo(a.sx, a.sy); ctx.lineTo(b.sx, b.sy); ctx.stroke();
+}
+function nd(ctx, p, r, col) {
+  ctx.beginPath(); ctx.arc(p.sx, p.sy, r, 0, Math.PI * 2);
+  ctx.fillStyle = col; ctx.fill();
+}
+
+// ── C채널 단면으로 스터드 그리기 ──
+// 벽의 법선 방향(inward)으로 플랜지가 열림
+// web(뒷면):flange(날개) = 1:2 비율
+// inNx, inNz = 집 내부를 향하는 단위 법선벡터
+// ── C채널 단면 (채워진 버전, 빈공간 없음) ──
+// web 외부면 + 두 flange를 solid fill로 그림
+// inNx,inNz: 집 내부 방향 (채널 열린쪽)
+function drawCStud(ctx, cx, cy, sc, rX, rY, xi, zi, yBot, yTop, inNx, inNz, col) {
+  const FW = 0.04;  // flange 폭 (m)
+  const WD = 0.02;  // web depth = FW/2 (1:2 비율)
+  // 법선에 수직인 방향 (벽 방향)
+  const tx = -inNz, tz = inNx; // 벽 tangent
+
+  // 단면의 6개 꼭짓점 (C형, 열린 면이 inN 방향)
+  // Af1---A---Af2   (web 외부, flanges)
+  //  |         |
+  // Bf1---B---Bf2   (web 내부 = inN 방향으로 WD만큼)
+  // 빈공간(Bf1~Bf2 사이)은 채우지 않음 → 대신 전체를 solid로
+  function pts(y) {
+    return [
+      { x: xi + tx*FW,           z: zi + tz*FW,           y }, // Af1
+      { x: xi,                   z: zi,                   y }, // A  (web 외부 중앙)
+      { x: xi - tx*FW,           z: zi - tz*FW,           y }, // Af2
+      { x: xi - tx*FW + inNx*WD, z: zi - tz*FW + inNz*WD, y }, // Bf2
+      { x: xi + inNx*WD,         z: zi + inNz*WD,         y }, // B  (web 내부 중앙)
+      { x: xi + tx*FW + inNx*WD, z: zi + tz*FW + inNz*WD, y }, // Bf1
+    ];
+  }
+  const pr = o => proj(o.x, o.y, o.z, cx, cy, sc, rX, rY);
+  const bot = pts(yBot).map(pr);
+  const top = pts(yTop).map(pr);
+
+  // 각 면을 filled polygon으로
+  function fillFace(pts2d) {
+    ctx.beginPath();
+    ctx.moveTo(pts2d[0].sx, pts2d[0].sy);
+    for (let i = 1; i < pts2d.length; i++) ctx.lineTo(pts2d[i].sx, pts2d[i].sy);
+    ctx.closePath();
+    ctx.fillStyle = col;
+    ctx.fill();
+    ctx.strokeStyle = col;
+    ctx.lineWidth = 0.5;
+    ctx.stroke();
+  }
+
+  // top face
+  fillFace(top);
+  // bottom face
+  fillFace(bot);
+  // side faces (세로 연결)
+  for (let i = 0; i < 6; i++) {
+    const j = (i + 1) % 6;
+    ctx.beginPath();
+    ctx.moveTo(bot[i].sx, bot[i].sy); ctx.lineTo(top[i].sx, top[i].sy);
+    ctx.lineTo(top[j].sx, top[j].sy); ctx.lineTo(bot[j].sx, bot[j].sy);
+    ctx.closePath();
+    ctx.fillStyle = col;
+    ctx.fill();
+    ctx.strokeStyle = col;
+    ctx.lineWidth = 0.4;
+    ctx.stroke();
+  }
+}
+
+// ── C채널 트러스 멤버 (지붕 라인에 적용) ──
+function drawCTruss(ctx, cx, cy, sc, rX, rY, pa, pb, perpNx, perpNz, col) {
+  const FW = 0.03;
+  const WD = 0.015;
+  // pa, pb: 3D 좌표 {x,y,z}
+  const dx = pb.x - pa.x, dy = pb.y - pa.y, dz = pb.z - pa.z;
+  const len = Math.sqrt(dx*dx+dy*dy+dz*dz);
+  if (len < 0.01) return;
+
+  // 단면: 트러스 방향에 수직인 작은 C형
+  // 단순하게 트러스 라인 + 두께로 표현 (근사)
+  const pr = (x,y,z) => proj(x,y,z,cx,cy,sc,rX,rY);
+  const a = pr(pa.x,pa.y,pa.z);
+  const b = pr(pb.x,pb.y,pb.z);
+
+  // 법선 오프셋으로 두께 표현
+  const nx = perpNx * FW, nz = perpNz * FW;
+  const a1 = pr(pa.x+nx,pa.y,pa.z+nz), b1 = pr(pb.x+nx,pb.y,pb.z+nz);
+  const a2 = pr(pa.x-nx,pa.y,pa.z-nz), b2 = pr(pb.x-nx,pb.y,pb.z-nz);
+
+  ctx.beginPath();
+  ctx.moveTo(a1.sx,a1.sy); ctx.lineTo(b1.sx,b1.sy);
+  ctx.lineTo(b2.sx,b2.sy); ctx.lineTo(a2.sx,a2.sy);
+  ctx.closePath();
+  ctx.fillStyle = col; ctx.fill();
+  ctx.strokeStyle = col; ctx.lineWidth = 0.5; ctx.stroke();
+}
+
+// ── Wall: C채널 스터드 + 플레이트 전부 C형 ──
+function drawWall(ctx, cx, cy, sc, rX, rY, x0, z0, x1, z1, yBot, yTop, main) {
+  const len = Math.sqrt((x1-x0)**2 + (z1-z0)**2);
+  if (len < 0.001) return;
+  const steps = Math.max(1, Math.round(len / SS));
+  const col = main ? '#5BB8D4' : 'rgba(168,230,207,0.35)';
+
+  const dx = (x1-x0)/len, dz = (z1-z0)/len;
+  const midX = (x0+x1)/2, midZ = (z0+z1)/2;
+  const n1x = -dz, n1z = dx;
+  const dot = n1x*(0-midX) + n1z*(0-midZ);
+  const inNx = dot >= 0 ? n1x : dz;
+  const inNz = dot >= 0 ? n1z : -dx;
+
+  // Bottom plate (C채널, 가로 방향 — 스터드와 수직)
+  // plate의 C형은 벽 방향(dx,dz)으로 누움, 내부 방향으로 열림
+  drawCTruss(ctx,cx,cy,sc,rX,rY,
+    {x:x0,y:yBot,z:z0},{x:x1,y:yBot,z:z1},
+    inNx,inNz,col);
+  // Top plate
+  drawCTruss(ctx,cx,cy,sc,rX,rY,
+    {x:x0,y:yTop,z:z0},{x:x1,y:yTop,z:z1},
+    inNx,inNz,col);
+
+  if (main) {
+    nd(ctx,proj(x0,yBot,z0,cx,cy,sc,rX,rY),2,'#A8E6CF');
+    nd(ctx,proj(x1,yBot,z1,cx,cy,sc,rX,rY),2,'#A8E6CF');
+    nd(ctx,proj(x0,yTop,z0,cx,cy,sc,rX,rY),2,'#A8E6CF');
+    nd(ctx,proj(x1,yTop,z1,cx,cy,sc,rX,rY),2,'#A8E6CF');
+  }
+
+  // 스터드: C채널 수직
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    const xi = x0+(x1-x0)*t, zi = z0+(z1-z0)*t;
+    drawCStud(ctx, cx, cy, sc, rX, rY, xi, zi, yBot, yTop, inNx, inNz, col);
+  }
+}
+
+// ── Dimension Lines (도면 치수선) ──
+function drawDimensions(ctx, cx, cy, sc, rX, rY, x0, x1, z0, z1, yBot) {
+  const GAP = 0.6; // 치수선 오프셋 (m)
+  const col = 'rgba(168,230,207,0.7)';
+  const lw = 0.6;
+
+  // Width 치수선 (앞면 z0 쪽, y=바닥)
+  const wL = proj(x0, yBot, z0 - GAP, cx, cy, sc, rX, rY);
+  const wR = proj(x1, yBot, z0 - GAP, cx, cy, sc, rX, rY);
+  const wL0 = proj(x0, yBot, z0, cx, cy, sc, rX, rY);
+  const wR0 = proj(x1, yBot, z0, cx, cy, sc, rX, rY);
+  ln(ctx, wL0, wL, col, lw); // 연결선
+  ln(ctx, wR0, wR, col, lw);
+  ln(ctx, wL, wR, col, lw); // 치수선
+  // 화살표 tick
+  drawTick(ctx, wL, wR, col);
+  drawTick(ctx, wR, wL, col);
+  // 텍스트
+  drawDimText(ctx, wL, wR, BW.toFixed(1) + ' m');
+
+  // Depth 치수선 (오른쪽 x1 쪽)
+  const dF = proj(x1 + GAP, yBot, z0, cx, cy, sc, rX, rY);
+  const dB = proj(x1 + GAP, yBot, z1, cx, cy, sc, rX, rY);
+  const dF0 = proj(x1, yBot, z0, cx, cy, sc, rX, rY);
+  const dB0 = proj(x1, yBot, z1, cx, cy, sc, rX, rY);
+  ln(ctx, dF0, dF, col, lw);
+  ln(ctx, dB0, dB, col, lw);
+  ln(ctx, dF, dB, col, lw);
+  drawTick(ctx, dF, dB, col);
+  drawTick(ctx, dB, dF, col);
+  drawDimText(ctx, dF, dB, BD.toFixed(1) + ' m');
+
+  // Height 치수선 (왼쪽 x0 쪽)
+  const floors = houseType === 'double' ? 2 : 1;
+  const yTop = floors * SH;
+  const hB = proj(x0 - GAP, yBot, z0, cx, cy, sc, rX, rY);
+  const hT = proj(x0 - GAP, yTop, z0, cx, cy, sc, rX, rY);
+  const hB0 = proj(x0, yBot, z0, cx, cy, sc, rX, rY);
+  const hT0 = proj(x0, yTop, z0, cx, cy, sc, rX, rY);
+  ln(ctx, hB0, hB, col, lw);
+  ln(ctx, hT0, hT, col, lw);
+  ln(ctx, hB, hT, col, lw);
+  drawTick(ctx, hB, hT, col);
+  drawTick(ctx, hT, hB, col);
+  drawDimText(ctx, hB, hT, (SH * floors).toFixed(1) + ' m');
+}
+
+function drawTick(ctx, from, to, col) {
+  const dx = to.sx - from.sx, dy = to.sy - from.sy;
+  const len = Math.sqrt(dx*dx+dy*dy);
+  if (len < 1) return;
+  const nx = -dy/len*6, ny = dx/len*6;
+  ctx.strokeStyle = col; ctx.lineWidth = 0.6;
+  ctx.beginPath();
+  ctx.moveTo(from.sx + nx, from.sy + ny);
+  ctx.lineTo(from.sx - nx, from.sy - ny);
+  ctx.stroke();
+}
+
+function drawDimText(ctx, a, b, text) {
+  const mx = (a.sx + b.sx) / 2;
+  const my = (a.sy + b.sy) / 2;
+  ctx.save();
+  ctx.font = '700 11px Pretendard, sans-serif';
+  ctx.fillStyle = '#A8E6CF';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  // 배경
+  const tw = ctx.measureText(text).width;
+  ctx.fillStyle = 'rgba(8,8,8,0.75)';
+  ctx.fillRect(mx - tw/2 - 4, my - 8, tw + 8, 16);
+  ctx.fillStyle = '#A8E6CF';
+  ctx.fillText(text, mx, my);
+  ctx.restore();
+}
+
+// ── Floor Joists at height y ──
+function drawJoists(ctx, cx, cy, sc, rX, rY, x0, x1, z0, z1, y) {
+  const steps = Math.max(1, Math.round((z1-z0)/SS));
+  for (let i = 0; i <= steps; i++) {
+    const zi = z0 + (z1-z0) * i/steps;
+    ln(ctx, proj(x0,y,zi,cx,cy,sc,rX,rY), proj(x1,y,zi,cx,cy,sc,rX,rY), 'rgba(168,230,207,0.4)', 0.6);
+  }
+  const c = [[x0,z0],[x1,z0],[x1,z1],[x0,z1]].map(([x,z])=>proj(x,y,z,cx,cy,sc,rX,rY));
+  for (let i = 0; i < 4; i++) ln(ctx,c[i],c[(i+1)%4],'#5BB8D4',1.1);
+}
+
+// ── Hip / Skillion Roof (yBase = eave height, truss goes UP from yBase) ──
+function getRoofH(w, d, type) {
+  if (type === 'granny') return 0.7;
+  return Math.min(w,d) / 2 * Math.tan(22.5 * Math.PI / 180);
+}
+
+function drawRoof(ctx, cx, cy, sc, rX, rY, x0, x1, z0, z1, yBase, type) {
+  const rH = getRoofH(x1-x0, z1-z0, type);
+  const yApex = yBase + rH;
+  const mz = (z0+z1)/2;
+  const rx0 = x0+(x1-x0)*0.25, rx1 = x0+(x1-x0)*0.75;
+  const col = '#A8E6CF';
+
+  if (type === 'granny') {
+    const stX = Math.max(2, Math.round((x1-x0)/TS));
+    for (let i = 0; i <= stX; i++) {
+      const xi = x0+(x1-x0)*i/stX;
+      drawCTruss(ctx,cx,cy,sc,rX,rY,
+        {x:xi,y:yBase,z:z0},{x:xi,y:yApex,z:z1},
+        1,0,col);
+    }
+    ln(ctx,proj(x0,yApex,z1,cx,cy,sc,rX,rY),proj(x1,yApex,z1,cx,cy,sc,rX,rY),col,1.5);
+    ln(ctx,proj(x0,yBase,z0,cx,cy,sc,rX,rY),proj(x1,yBase,z0,cx,cy,sc,rX,rY),col,1.2);
+    return;
+  }
+
+  // ridge beam (C채널)
+  drawCTruss(ctx,cx,cy,sc,rX,rY,
+    {x:rx0,y:yApex,z:mz},{x:rx1,y:yApex,z:mz},
+    0,1,col);
+
+  // eave perimeter
+  const eave = [[x0,z0],[x1,z0],[x1,z1],[x0,z1]].map(([x,z])=>proj(x,yBase,z,cx,cy,sc,rX,rY));
+  for (let i = 0; i < 4; i++) ln(ctx,eave[i],eave[(i+1)%4],'#5BB8D4',1.2);
+
+  // hip edges (C채널)
+  const rp0={x:rx0,y:yApex,z:mz}, rp1={x:rx1,y:yApex,z:mz};
+  drawCTruss(ctx,cx,cy,sc,rX,rY,{x:x0,y:yBase,z:z0},rp0,0,1,col);
+  drawCTruss(ctx,cx,cy,sc,rX,rY,{x:x0,y:yBase,z:z1},rp0,0,1,col);
+  drawCTruss(ctx,cx,cy,sc,rX,rY,{x:x1,y:yBase,z:z0},rp1,0,1,col);
+  drawCTruss(ctx,cx,cy,sc,rX,rY,{x:x1,y:yBase,z:z1},rp1,0,1,col);
+
+  // main rafters (front/back → ridge)
+  const stX = Math.max(2, Math.round((rx1-rx0)/TS));
+  for (let i = 0; i <= stX; i++) {
+    const t = i/stX, xi = rx0+(rx1-rx0)*t;
+    drawCTruss(ctx,cx,cy,sc,rX,rY,{x:xi,y:yBase,z:z0},{x:xi,y:yApex,z:mz},1,0,col);
+    drawCTruss(ctx,cx,cy,sc,rX,rY,{x:xi,y:yBase,z:z1},{x:xi,y:yApex,z:mz},1,0,col);
+  }
+
+  // side rafters
+  const stZ = Math.max(2, Math.round((z1-z0)/TS));
+  for (let i = 1; i < stZ; i++) {
+    const zi = z0+(z1-z0)*i/stZ;
+    drawCTruss(ctx,cx,cy,sc,rX,rY,{x:x0,y:yBase,z:zi},rp0,0,1,col);
+    drawCTruss(ctx,cx,cy,sc,rX,rY,{x:x1,y:yBase,z:zi},rp1,0,1,col);
+  }
+}
+
+// ── Main Draw ──
+function drawLGS() {
+  const canvas = document.getElementById('lgsCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const cw = canvas.offsetWidth;
+  const ch = 312; // 480의 65%
+
+  canvas.width = cw * dpr;
+  canvas.height = ch * dpr;
+  canvas.style.height = ch + 'px';
+  ctx.scale(dpr, dpr);
+  ctx.fillStyle = '#080808';
+  ctx.fillRect(0, 0, cw, ch);
+
+  const floors = houseType === 'double' ? 2 : 1;
+  const rH = getRoofH(BW, BD, houseType);
+
+  const BASE_PX_PER_M = 22; // 원래 스케일 복원
+  const sc = BASE_PX_PER_M * zoomFactor;
+
+  const buildH = floors * SH + rH;
+  const cx = cw / 2;
+  const cy = ch / 2 + (buildH / 2) * sc * Math.cos(rotX);
+  const rX = rotX, rY = rotY;
+
+  if (houseType === 'duplex') {
+    const hw = BW / 2;
+    for (let u = 0; u < 2; u++) {
+      const ox = u === 0 ? -(hw/2) - 0.15 : (hw/2) + 0.15;
+      const x0 = ox - hw/2, x1 = ox + hw/2;
+      const yB = 0, yT = SH;
+      drawWall(ctx,cx,cy,sc,rX,rY,x0,-BD/2,x1,-BD/2,yB,yT,true);
+      drawWall(ctx,cx,cy,sc,rX,rY,x0,BD/2,x1,BD/2,yB,yT,true);
+      drawWall(ctx,cx,cy,sc,rX,rY,x0,-BD/2,x0,BD/2,yB,yT,true);
+      drawWall(ctx,cx,cy,sc,rX,rY,x1,-BD/2,x1,BD/2,yB,yT,true);
+      // partitions
+      drawWall(ctx,cx,cy,sc,rX,rY,x0,0,x1,0,yB,yT,false);
+      drawRoof(ctx,cx,cy,sc,rX,rY,x0,x1,-BD/2,BD/2,yT,'single');
+    }
+    // party wall
+    drawWall(ctx,cx,cy,sc,rX,rY,-0.09,-BD/2,-0.09,BD/2,0,SH,false);
+    drawWall(ctx,cx,cy,sc,rX,rY,0.09,-BD/2,0.09,BD/2,0,SH,false);
+  } else {
+    const x0 = -BW/2, x1 = BW/2, z0 = -BD/2, z1 = BD/2;
+    for (let fl = 0; fl < floors; fl++) {
+      const yB = fl * SH, yT = (fl+1) * SH;
+      drawWall(ctx,cx,cy,sc,rX,rY,x0,z0,x1,z0,yB,yT,true);
+      drawWall(ctx,cx,cy,sc,rX,rY,x0,z1,x1,z1,yB,yT,true);
+      drawWall(ctx,cx,cy,sc,rX,rY,x0,z0,x0,z1,yB,yT,true);
+      drawWall(ctx,cx,cy,sc,rX,rY,x1,z0,x1,z1,yB,yT,true);
+      // partitions
+      const mz = (z0+z1)/2;
+      drawWall(ctx,cx,cy,sc,rX,rY,x0,mz,x1,mz,yB,yT,false);
+      if (houseType !== 'granny') {
+        const x13=x0+(x1-x0)/3, x23=x0+(x1-x0)*2/3;
+        drawWall(ctx,cx,cy,sc,rX,rY,x13,z0,x13,z1,yB,yT,false);
+        drawWall(ctx,cx,cy,sc,rX,rY,x23,z0,x23,z1,yB,yT,false);
+      }
+      // floor joists between floors
+      if (houseType === 'double' && fl === 0) drawJoists(ctx,cx,cy,sc,rX,rY,x0,x1,z0,z1,yT);
+    }
+    // roof on top — yBase = top of walls
+    drawRoof(ctx,cx,cy,sc,rX,rY,x0,x1,z0,z1,floors*SH,houseType);
+    // 치수선
+    drawDimensions(ctx,cx,cy,sc,rX,rY,x0,x1,z0,z1,0);
+  }
+}
+
+// ── Quote ──
+function calcQuote() {
+  if (!document.getElementById('q-sqm') || !document.getElementById('q-tot')) return;
+  const floors = houseType === 'double' ? 2 : 1;
+  const sqm = Math.round(BW * BD * floors * 10) / 10;
+  const tot = sqm * 200;
+  const fmt = n => '$' + Math.round(n).toLocaleString('en-AU');
+  document.getElementById('q-sqm').textContent = sqm + ' sqm';
+  document.getElementById('q-tot').textContent = fmt(tot);
+}
+
+// ── Slider ──
+function fillSlider(el) {
+  const pct = ((el.value-el.min)/(el.max-el.min))*100;
+  el.style.setProperty('--pct', pct+'%');
+}
+function onSlider() {
+  if (!document.getElementById('sw') || !document.getElementById('sd')) return;
+  BW = parseFloat(document.getElementById('sw').value);
+  BD = parseFloat(document.getElementById('sd').value);
+  document.getElementById('vw').innerHTML = BW.toFixed(1)+'<span> m</span>';
+  document.getElementById('vd').innerHTML = BD.toFixed(1)+'<span> m</span>';
+  const floors = houseType === 'double' ? 2 : 1;
+  document.getElementById('sqm-val').textContent = (Math.round(BW*BD*floors*10)/10)+' sqm';
+  fillSlider(document.getElementById('sw'));
+  fillSlider(document.getElementById('sd'));
+  drawLGS(); calcQuote();
+}
+function setType(type, el) {
+  houseType = type;
+  document.querySelectorAll('.type-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  drawLGS(); calcQuote();
+}
+
+// ── Drag & Zoom ──
+const lc = document.getElementById('lgsCanvas');
+window.addEventListener('mousemove', e=>{
+  if(!drag)return;
+  rotY+=(e.clientX-lx)*0.01; rotX+=(e.clientY-ly)*0.01;
+  rotX=Math.max(-0.8,Math.min(0.8,rotX));
+  lx=e.clientX;ly=e.clientY; drawLGS();
+});
+window.addEventListener('mouseup',()=>drag=false);
+
+// ── Zoom ──
+function zoomStep(delta) {
+  zoomFactor = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoomFactor + delta));
+  drawLGS();
+}
+
+// Pinch zoom
+let lastPinchDist = null;
+if (lc) {
+  lc.addEventListener('mousedown', e=>{drag=true;lx=e.clientX;ly=e.clientY;});
+  lc.addEventListener('touchstart', e => {
+    if (e.touches.length === 2) { lastPinchDist = null; return; }
+    drag=true; lx=e.touches[0].clientX; ly=e.touches[0].clientY;
+  }, {passive:true});
+  lc.addEventListener('touchmove', e => {
+    if (e.touches.length === 2) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (lastPinchDist !== null) {
+        zoomFactor = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoomFactor * (dist / lastPinchDist)));
+        drawLGS();
+      }
+      lastPinchDist = dist;
+      e.preventDefault(); return;
+    }
+    if (!drag) return;
+    rotY+=(e.touches[0].clientX-lx)*0.012; rotX+=(e.touches[0].clientY-ly)*0.012;
+    rotX=Math.max(-0.8,Math.min(0.8,rotX));
+    lx=e.touches[0].clientX; ly=e.touches[0].clientY; drawLGS(); e.preventDefault();
+  }, {passive:false});
+  lc.addEventListener('touchend', () => { drag=false; lastPinchDist=null; });
+  lc.addEventListener('wheel', e => {
+    e.preventDefault();
+    zoomFactor = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoomFactor - e.deltaY * 0.001));
+    drawLGS();
+  }, {passive:false});
+}
+
+// ── Hero Canvas ──
+const hc = document.getElementById('heroCanvas');
+const hctx = hc.getContext('2d');
+let hRot = 0;
+function resizeHero() {
+  const dpr = window.devicePixelRatio||1;
+  hc.width = window.innerWidth*dpr; hc.height = window.innerHeight*dpr;
+  hctx.scale(dpr,dpr);
+}
+resizeHero();
+window.addEventListener('resize',()=>{resizeHero();drawLGS();});
+
+function animHero() {
+  const W=window.innerWidth, H=window.innerHeight;
+  hctx.fillStyle='#080808';
+  hctx.fillRect(0,0,W,H);
+  const hw=8,hd=6,hfl=2;
+  const sc=Math.min(W,H)*0.09;
+  const cx=W*0.72, cy=H*0.62; // anchor 하단
+  const rX=0.35, rY=hRot;
+
+  for(let fl=0;fl<hfl;fl++){
+    const yB=fl*SH, yT=(fl+1)*SH;
+    const verts=[
+      [-hw/2,yB,-hd/2],[hw/2,yB,-hd/2],[hw/2,yB,hd/2],[-hw/2,yB,hd/2],
+      [-hw/2,yT,-hd/2],[hw/2,yT,-hd/2],[hw/2,yT,hd/2],[-hw/2,yT,hd/2]
+    ].map(([x,y,z])=>proj(x,y,z,cx,cy,sc,rX,rY));
+    const edges=[[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+    hctx.strokeStyle='rgba(91,184,212,0.55)'; hctx.lineWidth=1;
+    edges.forEach(([a,b])=>{hctx.beginPath();hctx.moveTo(verts[a].sx,verts[a].sy);hctx.lineTo(verts[b].sx,verts[b].sy);hctx.stroke();});
+    // studs (simplified)
+    hctx.strokeStyle='rgba(91,184,212,0.18)'; hctx.lineWidth=0.4;
+    for(let i=1;i<4;i++){
+      const x=-hw/2+(hw/4)*i;
+      const sb1=proj(x,yB,-hd/2,cx,cy,sc,rX,rY), st1=proj(x,yT,-hd/2,cx,cy,sc,rX,rY);
+      const sb2=proj(x,yB,hd/2,cx,cy,sc,rX,rY), st2=proj(x,yT,hd/2,cx,cy,sc,rX,rY);
+      hctx.beginPath();hctx.moveTo(sb1.sx,sb1.sy);hctx.lineTo(st1.sx,st1.sy);hctx.stroke();
+      hctx.beginPath();hctx.moveTo(sb2.sx,sb2.sy);hctx.lineTo(st2.sx,st2.sy);hctx.stroke();
+    }
+    verts.forEach(p=>{hctx.beginPath();hctx.arc(p.sx,p.sy,1.8,0,Math.PI*2);hctx.fillStyle='rgba(168,230,207,0.7)';hctx.fill();});
+  }
+  // hip roof on hero (위로)
+  const rH2=getRoofH(hw,hd,'single');
+  const yBase=hfl*SH, yApex=yBase+rH2;
+  const mz=0, rx0=-hw/4, rx1=hw/4;
+  const rp0=proj(rx0,yApex,mz,cx,cy,sc,rX,rY);
+  const rp1=proj(rx1,yApex,mz,cx,cy,sc,rX,rY);
+  hctx.strokeStyle='#A8E6CF'; hctx.lineWidth=1;
+  hctx.beginPath();hctx.moveTo(rp0.sx,rp0.sy);hctx.lineTo(rp1.sx,rp1.sy);hctx.stroke();
+  [[-hw/2,-hd/2],[hw/2,-hd/2],[hw/2,hd/2],[-hw/2,hd/2]].forEach(([x,z],i)=>{
+    const e=proj(x,yBase,z,cx,cy,sc,rX,rY);
+    const rp=i<2?rp1:rp0;
+    hctx.strokeStyle='rgba(168,230,207,0.55)'; hctx.lineWidth=0.8;
+    hctx.beginPath();hctx.moveTo(e.sx,e.sy);hctx.lineTo(rp.sx,rp.sy);hctx.stroke();
+  });
+  hRot+=0.003;
+  requestAnimationFrame(animHero);
+}
+animHero();
+
+// Init
+const frameosPreview = document.getElementById('frameos-live');
+if (frameosPreview) frameosPreview.addEventListener('load', () => setFrameOSLive('delivery'));
+onSlider();
+</script>
+</body>
+</html>

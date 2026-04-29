@@ -52,8 +52,8 @@
 
   /* Phone frame */
   .phone {
-    width: 366.6px;
-    height: 810.24px;
+    width: 331.5px;
+    height: 717.4px;
     background:
       linear-gradient(180deg, rgba(28,43,59,0.74) 0%, rgba(8,17,27,0) 150px),
       var(--bg);
@@ -94,7 +94,7 @@
 
   /* Screen container */
   .screens {
-    height: calc(810.24px - 47px - 78px);
+    height: calc(717.4px - 47px - 78px);
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-width: none;
@@ -953,11 +953,11 @@
 
   #screen-messages {
     position: relative;
-    min-height: calc(810.24px - 47px - 78px);
+    min-height: calc(717.4px - 47px - 78px);
     padding-bottom: 84px;
   }
   #msg-chat-view {
-    min-height: calc(810.24px - 47px - 78px);
+    min-height: calc(717.4px - 47px - 78px);
     position: relative;
   }
   .message-list {
@@ -1101,7 +1101,7 @@
   /* Delivery v2: full-bg map + floating sheet */
   .delivery-shell {
     position: relative;
-    height: calc(810.24px - 47px - 78px);
+    height: calc(717.4px - 47px - 78px);
     width: 100%;
   }
   .map-bg {
@@ -1903,15 +1903,7 @@
 </div>
 
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyAv0b5k_YqdxGP19gGcsmJM5MyhuKjREDo",
-  authDomain: "quot-ba823.firebaseapp.com",
-  projectId: "quot-ba823",
-  storageBucket: "quot-ba823.firebasestorage.app",
-  messagingSenderId: "943513643901",
-  appId: "1:943513643901:web:0525e00bba1cf02868fa14",
-  measurementId: "G-PV24573L8Z"
-};
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mykognek';
 
 /* ===== Mock data for packages ===== */
 const PACKAGES = [
@@ -2252,12 +2244,31 @@ function saveEnquiryLocal(payload) {
   prev.unshift(payload);
   localStorage.setItem(key, JSON.stringify(prev));
 }
-function submitVariation() {
+async function submitVariation() {
+  const btn = document.querySelector('#vr-form .btn-primary.btn-block');
   const payload = collectVariationPayload();
-  saveEnquiryLocal(payload);
-  document.getElementById('vr-form').style.display = 'none';
-  document.getElementById('vr-success').style.display = 'block';
-  document.getElementById('vr-sheet').scrollTop = 0;
+  const body = {
+    _subject: `[FrameOS] Variation enquiry · ${payload.id}`,
+    ...payload
+  };
+  try {
+    if (btn) { btn.disabled = true; btn.dataset._t = btn.textContent; btn.textContent = 'Sending…'; }
+    const res = await fetch(FORMSPREE_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || res.statusText || 'submit failed');
+    saveEnquiryLocal(payload);
+    document.getElementById('vr-form').style.display = 'none';
+    document.getElementById('vr-success').style.display = 'block';
+    document.getElementById('vr-sheet').scrollTop = 0;
+  } catch (e) {
+    alert('전송에 실패했습니다. 네트워크/Formspree 설정을 확인해 주세요.');
+  } finally {
+    if (btn) { btn.disabled = false; if (btn.dataset._t) btn.textContent = btn.dataset._t; }
+  }
 }
 document.querySelectorAll('#priority-grid .opt').forEach(opt => {
   opt.addEventListener('click', () => {

@@ -34,11 +34,17 @@
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body {
     margin: 0; padding: 0;
-    background: #070E16;
+    background: transparent;
     font-family: 'Pretendard Variable', Pretendard, system-ui, -apple-system, sans-serif;
     color: var(--text);
-    min-height: 100vh;
     -webkit-font-smoothing: antialiased;
+  }
+  body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 16px;
   }
 
   .stage {
@@ -60,9 +66,7 @@
     border-radius: 44px;
     border: 2px solid #1a2230;
     box-shadow:
-      0 0 0 8px #050A10,
-      0 0 0 9px #172436,
-      0 30px 80px rgba(0,0,0,0.6),
+      0 24px 56px rgba(0,0,0,0.35),
       inset 0 0 0 1px rgba(255,255,255,0.03);
     position: relative;
     overflow: hidden;
@@ -1383,6 +1387,27 @@
     display: flex;
   }
 
+  .fs-honeypot {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .vr-form-error {
+    display: none;
+    margin: 0 20px 12px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 12px;
+    line-height: 1.45;
+    color: #fecaca;
+    background: rgba(127,29,29,0.35);
+    border: 1px solid rgba(248,113,113,0.35);
+  }
+
   /* Hint label */
   .hint {
     text-align: center;
@@ -1720,10 +1745,11 @@
             </button>
           </div>
 
-          <div id="vr-form">
+          <form id="vr-form">
+            <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" class="fs-honeypot" value="">
             <label class="field">
               <div class="lab">Panel affected</div>
-              <select class="select">
+              <select class="select" name="panel" required>
                 <option>W-19 · North wall · 4800×2700</option>
                 <option>W-09 · North wall · 6000×2700</option>
                 <option>L-07 · Lintel · 2400 span</option>
@@ -1731,8 +1757,23 @@
             </label>
 
             <label class="field">
+              <div class="lab">Your name</div>
+              <input class="input" type="text" name="name" placeholder="Full name" autocomplete="name" required>
+            </label>
+
+            <label class="field">
+              <div class="lab">Email</div>
+              <input class="input" type="email" name="email" placeholder="you@company.com" autocomplete="email" required>
+            </label>
+
+            <label class="field">
+              <div class="lab">Phone <span style="color:var(--muted); font-weight:500;">(optional)</span></div>
+              <input class="input" type="tel" name="phone" placeholder="+61 …" autocomplete="tel">
+            </label>
+
+            <label class="field">
               <div class="lab">What's changing</div>
-              <textarea class="textarea" placeholder="Describe the change…">Move window opening 200mm east to align with internal stud spacing.</textarea>
+              <textarea class="textarea" name="note" placeholder="Describe the change…" required>Move window opening 200mm east to align with internal stud spacing.</textarea>
             </label>
 
             <div style="font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:600; margin: 0 20px 6px;">Photos</div>
@@ -1761,10 +1802,11 @@
               <span>DBP Act s.6A audit trail will be auto-generated</span>
             </div>
 
+            <div id="vr-form-error" class="vr-form-error" role="alert"></div>
             <div style="padding: 0 20px;">
-              <button class="btn btn-primary btn-block" onclick="submitVariation()">Submit request</button>
+              <button type="submit" class="btn btn-primary btn-block">Submit request</button>
             </div>
-          </div>
+          </form>
 
           <div id="vr-success" style="display:none;" class="confirm-wrap">
             <div class="check-circle">
@@ -1902,8 +1944,56 @@
 
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics-compat.js"></script>
 <script>
 const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mykognek';
+
+const firebaseConfig = {
+  apiKey: 'AIzaSyAv0b5k_YqdxGP19gGcsmJM5MyhuKjREDo',
+  authDomain: 'quot-ba823.firebaseapp.com',
+  projectId: 'quot-ba823',
+  storageBucket: 'quot-ba823.firebasestorage.app',
+  messagingSenderId: '943513643901',
+  appId: '1:943513643901:web:0525e00bba1cf02868fa14',
+  measurementId: 'G-PV24573L8Z'
+};
+
+(function initFirebaseApp() {
+  if (typeof firebase === 'undefined') return;
+  try {
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    try {
+      firebase.analytics();
+    } catch (_) { /* Analytics unavailable (e.g. blocked / unsupported context) */ }
+  } catch (e) {
+    console.warn('[Firebase] init failed', e);
+  }
+})();
+
+/** Maps variation enquiry → Firestore `customer` schema (company, email, message, name, phone). */
+async function saveVariationToFirestoreCustomer(payload) {
+  if (typeof firebase === 'undefined' || !firebase.apps?.length) return;
+  const db = firebase.firestore();
+  const message = [
+    `[FrameOS Variation]`,
+    `ID: ${payload.id}`,
+    `Panel: ${payload.panel}`,
+    `Priority: ${payload.priority}`,
+    '',
+    payload.note
+  ].join('\n');
+  await db.collection('customer').add({
+    company: 'FrameOS',
+    email: String(payload.email || ''),
+    name: String(payload.name || ''),
+    phone: String(payload.phone || ''),
+    message
+  });
+}
 
 /* ===== Mock data for packages ===== */
 const PACKAGES = [
@@ -2211,8 +2301,10 @@ function signOff() {
 function openVrSheet() {
   const ov = document.getElementById('vr-overlay');
   const sh = document.getElementById('vr-sheet');
+  const errEl = document.getElementById('vr-form-error');
   document.getElementById('vr-form').style.display = 'block';
   document.getElementById('vr-success').style.display = 'none';
+  if (errEl) { errEl.style.display = 'none'; errEl.textContent = ''; }
   ov.classList.add('show');
   requestAnimationFrame(() => sh.classList.add('show'));
 }
@@ -2226,17 +2318,47 @@ function closeVrSheet(e) {
   setTimeout(() => ov.classList.remove('show'), 280);
 }
 function collectVariationPayload() {
-  const panel = document.querySelector('#vr-form .select')?.value || '';
-  const note = document.querySelector('#vr-form .textarea')?.value || '';
+  const form = document.getElementById('vr-form');
+  const panel = form?.querySelector('[name="panel"]')?.value || '';
+  const name = form?.querySelector('[name="name"]')?.value?.trim() || '';
+  const email = form?.querySelector('[name="email"]')?.value?.trim() || '';
+  const phone = form?.querySelector('[name="phone"]')?.value?.trim() || '';
+  const note = form?.querySelector('[name="note"]')?.value?.trim() || '';
   const priority = document.querySelector('#priority-grid .opt.active')?.dataset?.p || 'standard';
   return {
     id: `ENQ-${Date.now()}`,
     type: 'variation_enquiry',
     panel,
+    name,
+    email,
+    phone,
     note,
     priority,
     createdAt: new Date().toISOString()
   };
+}
+
+function formSpreeErrorMessage(data) {
+  if (!data || typeof data !== 'object') return '';
+  if (typeof data.error === 'string' && data.error.trim()) return data.error.trim();
+  const errs = data.errors;
+  if (errs && typeof errs === 'object') {
+    const parts = [];
+    for (const key of Object.keys(errs)) {
+      const v = errs[key];
+      if (Array.isArray(v)) parts.push(...v.filter(Boolean));
+      else if (typeof v === 'string') parts.push(v);
+    }
+    if (parts.length) return parts.join(' ');
+  }
+  return '';
+}
+
+function showVrFormError(msg) {
+  const el = document.getElementById('vr-form-error');
+  if (!el || !msg) return;
+  el.textContent = msg;
+  el.style.display = 'block';
 }
 function saveEnquiryLocal(payload) {
   const key = 'frameos_enquiries';
@@ -2245,10 +2367,20 @@ function saveEnquiryLocal(payload) {
   localStorage.setItem(key, JSON.stringify(prev));
 }
 async function submitVariation() {
+  const form = document.getElementById('vr-form');
+  const errBox = document.getElementById('vr-form-error');
+  if (errBox) { errBox.style.display = 'none'; errBox.textContent = ''; }
+
+  const hp = form?.querySelector('[name="_gotcha"]');
+  if (hp?.value) return;
+
+  if (form && typeof form.reportValidity === 'function' && !form.reportValidity()) return;
+
   const btn = document.querySelector('#vr-form .btn-primary.btn-block');
   const payload = collectVariationPayload();
   const body = {
     _subject: `[FrameOS] Variation enquiry · ${payload.id}`,
+    _replyto: payload.email || undefined,
     ...payload
   };
   try {
@@ -2259,13 +2391,22 @@ async function submitVariation() {
       body: JSON.stringify(body)
     });
     const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(data.error || res.statusText || 'submit failed');
+    if (!res.ok) {
+      const detail = formSpreeErrorMessage(data) || res.statusText || 'Submit failed';
+      showVrFormError(detail);
+      return;
+    }
+    try {
+      await saveVariationToFirestoreCustomer(payload);
+    } catch (fbErr) {
+      console.warn('[Firestore] customer write failed', fbErr);
+    }
     saveEnquiryLocal(payload);
     document.getElementById('vr-form').style.display = 'none';
     document.getElementById('vr-success').style.display = 'block';
     document.getElementById('vr-sheet').scrollTop = 0;
   } catch (e) {
-    alert('전송에 실패했습니다. 네트워크/Formspree 설정을 확인해 주세요.');
+    showVrFormError('네트워크 오류입니다. 연결과 Formspree 설정을 확인해 주세요.');
   } finally {
     if (btn) { btn.disabled = false; if (btn.dataset._t) btn.textContent = btn.dataset._t; }
   }
@@ -2275,6 +2416,10 @@ document.querySelectorAll('#priority-grid .opt').forEach(opt => {
     document.querySelectorAll('#priority-grid .opt').forEach(o => o.classList.remove('active'));
     opt.classList.add('active');
   });
+});
+document.getElementById('vr-form')?.addEventListener('submit', (e) => {
+  e.preventDefault();
+  submitVariation();
 });
 document.querySelectorAll('.vr-tabs .vt').forEach(t => {
   t.addEventListener('click', () => {

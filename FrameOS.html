@@ -1,0 +1,2419 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>FrameOS — Mobile</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css">
+<style>
+  :root {
+    --bg: #08111B;
+    --surface: #111C2A;
+    --surface-2: #162536;
+    --elevated: #203247;
+    --amber: #F2A91B;
+    --amber-dim: rgba(242,169,27,0.13);
+    --amber-border: rgba(242,169,27,0.34);
+    --text: #F4F8FB;
+    --muted: #8A9BAD;
+    --muted-2: #607285;
+    --border: rgba(188,210,230,0.10);
+    --hairline: rgba(255,255,255,0.055);
+    --green: #7EE0A2;
+    --red: #FF9B9B;
+    --blue: #7DB7FF;
+    --cyan: #69D5E7;
+    --purple: #CBA7FF;
+    --yellow: #F8D36B;
+    --lime: #B9F37D;
+    --pink: #F5A6CF;
+    --shadow: 0 16px 34px rgba(0,0,0,0.28);
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; padding: 0;
+    background: #070E16;
+    font-family: 'Pretendard Variable', Pretendard, system-ui, -apple-system, sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .stage {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 32px 16px;
+    background:
+      radial-gradient(1000px 620px at 50% -10%, rgba(75,115,155,0.25), transparent 56%),
+      linear-gradient(180deg, #07101A 0%, #03070C 100%);
+  }
+
+  /* Phone frame */
+  .phone {
+    width: 390px;
+    height: 844px;
+    background:
+      linear-gradient(180deg, rgba(28,43,59,0.74) 0%, rgba(8,17,27,0) 150px),
+      var(--bg);
+    border-radius: 44px;
+    border: 2px solid #1a2230;
+    box-shadow:
+      0 0 0 8px #050A10,
+      0 0 0 9px #172436,
+      0 30px 80px rgba(0,0,0,0.6),
+      inset 0 0 0 1px rgba(255,255,255,0.03);
+    position: relative;
+    overflow: hidden;
+    font-size: 14px;
+  }
+
+  /* Status bar */
+  .status-bar {
+    height: 47px;
+    padding: 0 28px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-weight: 600;
+    font-size: 15px;
+    position: relative;
+    z-index: 10;
+    flex-shrink: 0;
+  }
+  .status-bar .right { display: flex; align-items: center; gap: 6px; }
+  .status-bar svg { display: block; }
+  .notch {
+    position: absolute;
+    top: 8px; left: 50%;
+    transform: translateX(-50%);
+    width: 110px; height: 30px;
+    background: #000;
+    border-radius: 18px;
+    z-index: 5;
+  }
+
+  /* Screen container */
+  .screens {
+    height: calc(844px - 47px - 78px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    background:
+      radial-gradient(500px 220px at 50% 0%, rgba(45,77,105,0.28), transparent 70%),
+      linear-gradient(180deg, rgba(9,18,29,0) 0%, rgba(9,18,29,0.92) 100%);
+  }
+  .screens::-webkit-scrollbar { display: none; }
+  .screen { display: none; padding: 0 0 16px; }
+  .screen.active { display: block; }
+
+  /* Top bar (per-screen) */
+  .topbar {
+    padding: 8px 20px 14px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px;
+  }
+  .logo {
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: -0.01em;
+  }
+  .logo .a { color: var(--amber); }
+  .logo .b { color: var(--text); }
+
+  .site-pill {
+    background: rgba(17,28,42,0.74);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 12px;
+    color: var(--text);
+    display: inline-flex; align-items: center; gap: 6px;
+    max-width: 170px;
+    cursor: pointer;
+  }
+  .site-pill .label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .icon-btn {
+    width: 36px; height: 36px;
+    background: rgba(17,28,42,0.82);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    display: inline-flex; align-items: center; justify-content: center;
+    position: relative;
+    cursor: pointer;
+    color: var(--text);
+  }
+  .icon-btn .dot {
+    position: absolute;
+    top: 7px; right: 7px;
+    width: 7px; height: 7px;
+    background: #ef4444;
+    border-radius: 50%;
+    border: 2px solid var(--bg);
+  }
+
+  .h-section {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted-2);
+    font-weight: 600;
+    padding: 10px 20px 8px;
+  }
+
+  .home-hero {
+    margin: 0 20px 14px;
+    border: 1px solid rgba(125,183,255,0.18);
+    border-radius: 18px;
+    padding: 16px;
+    background:
+      linear-gradient(135deg, rgba(125,183,255,0.13), rgba(242,169,27,0.08) 48%, rgba(17,28,42,0.88)),
+      var(--surface);
+    box-shadow: var(--shadow);
+  }
+  .home-hero .eyebrow {
+    color: var(--cyan);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .home-hero .site {
+    margin-top: 7px;
+    font-size: 20px;
+    font-weight: 760;
+    line-height: 1.15;
+  }
+  .home-hero .meta {
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .hero-kpis {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .hero-kpis .kpi {
+    background: rgba(8,17,27,0.54);
+    border: 1px solid var(--hairline);
+    border-radius: 12px;
+    padding: 10px;
+  }
+  .hero-kpis .num { font-size: 18px; font-weight: 760; }
+  .hero-kpis .lbl { margin-top: 2px; color: var(--muted); font-size: 10px; line-height: 1.2; }
+
+  /* Stat grid */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 0 20px;
+  }
+  .stat {
+    background: rgba(17,28,42,0.78);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 13px;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.14);
+  }
+  .stat .v { font-size: 27px; font-weight: 760; line-height: 1; letter-spacing: 0; }
+  .stat .l { font-size: 11px; color: var(--muted); margin-top: 8px; }
+  .stat.red .v { color: #FCA5A5; }
+  .stat.amber .v { color: var(--amber); }
+  .stat.green .v { color: var(--green); }
+
+  /* Card list */
+  .card {
+    background: linear-gradient(180deg, rgba(22,37,54,0.96), rgba(16,27,41,0.96));
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 15px;
+    margin: 0 20px 11px;
+    box-shadow: 0 12px 26px rgba(0,0,0,0.18);
+  }
+  .card.tap { cursor: pointer; transition: background 0.15s; }
+  .card.tap:active { background: var(--elevated); }
+
+  .pkg-row {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 10px;
+  }
+  .pkg-id {
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+  .pkg-title {
+    font-size: 14px; font-weight: 680;
+    margin-top: 2px; line-height: 1.3;
+  }
+  .pkg-sub {
+    font-size: 12px; color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .pill {
+    display: inline-flex; align-items: center;
+    border-radius: 999px;
+    padding: 4px 9px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .pill.manu { background: #1E3A5F; color: var(--blue); }
+  .pill.engi { background: #2E1A5A; color: var(--purple); }
+  .pill.transit { background: #3B2500; color: var(--yellow); }
+  .pill.onsite { background: #1A2E0F; color: var(--lime); }
+  .pill.installed { background: #0F2E1A; color: var(--green); }
+  .pill.delayed { background: #3B0D0D; color: var(--red); }
+  .pill.varpend { background: #3B0A2A; color: var(--pink); }
+  .pill.approved { background: #0F2E1A; color: var(--green); }
+
+  .progress {
+    height: 6px;
+    background: var(--elevated);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: 12px;
+  }
+  .progress > i {
+    display: block;
+    height: 100%;
+    background: var(--amber);
+    border-radius: 999px;
+    box-shadow: 0 0 14px rgba(242,169,27,0.3);
+  }
+  .progress.danger > i { background: #ef4444; }
+
+  .pkg-meta {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 10px;
+    font-size: 12px;
+  }
+  .pkg-meta .eta { color: var(--muted); }
+  .pkg-meta .link { color: var(--amber); font-weight: 600; }
+
+  /* Activity feed */
+  .feed-item {
+    display: flex; gap: 12px;
+    padding: 11px 20px;
+    align-items: flex-start;
+  }
+  .feed-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
+  .feed-dot.g { background: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,0.15); }
+  .feed-dot.a { background: var(--amber); box-shadow: 0 0 0 3px rgba(232,160,32,0.15); }
+  .feed-dot.r { background: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,0.15); }
+  .feed-text { font-size: 13px; line-height: 1.4; flex: 1; }
+  .feed-time { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* Bottom nav */
+  .tabbar {
+    height: 78px;
+    background: rgba(8,17,27,0.92);
+    border-top: 1px solid var(--border);
+    display: flex;
+    padding: 8px 8px 22px;
+    position: absolute; bottom: 0; left: 0; right: 0;
+    backdrop-filter: blur(16px);
+  }
+  .tab {
+    flex: 1;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 4px;
+    background: none;
+    border: 0;
+    color: var(--muted);
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 6px 4px;
+    border-radius: 14px;
+  }
+  .tab svg { width: 22px; height: 22px; }
+  .tab.active { color: var(--amber); background: rgba(242,169,27,0.10); }
+  .tab.active .tab-label { font-weight: 600; }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-height: 44px;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 14px; font-weight: 600;
+    padding: 10px 16px;
+    border: 0;
+    cursor: pointer;
+    transition: filter 0.15s, background 0.2s;
+  }
+  .btn-primary {
+    background: var(--amber);
+    color: #0F1923;
+  }
+  .btn-primary:active { filter: brightness(0.92); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--amber);
+    border: 1px solid var(--amber-border);
+  }
+  .btn-block { width: 100%; }
+  .btn.success {
+    background: #16a34a; color: #fff;
+  }
+
+  /* Search + chips */
+  .search {
+    margin: 0 20px 10px;
+    background: rgba(17,28,42,0.78);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 0 12px;
+    display: flex; align-items: center; gap: 8px;
+    height: 40px;
+  }
+  .search input {
+    flex: 1;
+    background: transparent; border: 0; outline: 0;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+  }
+  .search input::placeholder { color: var(--muted); }
+
+  .chips {
+    display: flex; gap: 6px;
+    padding: 0 20px 12px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip {
+    background: rgba(17,28,42,0.78);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .chip.active {
+    background: var(--amber-dim);
+    color: var(--amber);
+    border-color: var(--amber-border);
+  }
+
+  /* Pipeline stepper */
+  .stepper-wrap {
+    margin-top: 14px;
+    border-top: 1px dashed var(--border);
+    padding-top: 14px;
+  }
+  .stepper {
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+    gap: 0;
+    padding-bottom: 4px;
+  }
+  .stepper::-webkit-scrollbar { display: none; }
+  .step {
+    display: flex; flex-direction: column;
+    align-items: center;
+    min-width: 78px;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .step .node {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--elevated);
+    border: 2px solid var(--elevated);
+    color: var(--muted);
+    z-index: 2;
+  }
+  .step.done .node {
+    background: #14532d;
+    border-color: #16a34a;
+    color: #86EFAC;
+  }
+  .step.current .node {
+    background: var(--amber);
+    border-color: var(--amber);
+    color: #0F1923;
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(232,160,32,0.6); }
+    50% { box-shadow: 0 0 0 6px rgba(232,160,32,0); }
+  }
+  .step .lbl {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 6px;
+    text-align: center;
+    line-height: 1.2;
+  }
+  .step.done .lbl { color: var(--text); }
+  .step.current .lbl { color: var(--amber); font-weight: 600; }
+  /* removed step connector ::after */
+
+  .pkg-summary {
+    font-size: 12px; color: var(--muted);
+    margin-top: 12px; line-height: 1.5;
+  }
+
+  .compl {
+    margin-top: 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 11px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .compl .row { display: flex; align-items: center; gap: 6px; color: var(--muted); }
+  .compl .ok { color: var(--green); }
+  .compl .warn { color: var(--amber); }
+
+  /* Floor plan */
+  .floor-wrap {
+    margin: 0 20px 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+  }
+  .floor-title {
+    font-size: 13px; font-weight: 600;
+    margin-bottom: 10px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .floor-title .pkg-id { font-size: 11px; }
+  .floor svg { width: 100%; height: auto; display: block; }
+  .floor-tooltip {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 11px;
+    margin-top: 10px;
+    min-height: 38px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+  .floor-tooltip strong { color: var(--text); font-weight: 600; }
+  .legend {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 12px;
+    margin-top: 10px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .legend .sw {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    margin-right: 6px;
+    vertical-align: -1px;
+  }
+
+  /* Delivery / map */
+  .map {
+    background: linear-gradient(135deg, #0a121b 0%, #131e2b 100%);
+    border-radius: 12px;
+    height: 200px;
+    position: relative;
+    overflow: hidden;
+    margin: 0 20px 12px;
+    border: 1px solid var(--border);
+  }
+  .map .grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+  .map .street-h {
+    position: absolute; left: 0; right: 0;
+    height: 6px;
+    background: rgba(255,255,255,0.05);
+  }
+  .map .street-v {
+    position: absolute; top: 0; bottom: 0;
+    width: 6px;
+    background: rgba(255,255,255,0.05);
+  }
+  .map .badge {
+    position: absolute;
+    top: 12px; left: 12px;
+    background: rgba(15,25,35,0.9);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 11px;
+    font-weight: 500;
+    backdrop-filter: blur(6px);
+  }
+  .map .badge .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--amber); margin-right: 6px; vertical-align: 1px; animation: pulse 1.4s ease infinite; }
+  .map .truck {
+    position: absolute;
+    width: 28px; height: 28px;
+    background: var(--amber);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #0F1923;
+    box-shadow: 0 0 0 6px rgba(232,160,32,0.18), 0 0 20px rgba(232,160,32,0.4);
+    z-index: 3;
+  }
+  .map .pin {
+    position: absolute;
+    width: 18px; height: 18px;
+    color: #ef4444;
+    z-index: 3;
+  }
+
+  .countdown {
+    text-align: center;
+    margin: 4px 20px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+  }
+  .countdown .lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+  .countdown .v {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--amber);
+    margin-top: 4px;
+    letter-spacing: 0.02em;
+  }
+
+  .driver {
+    margin: 0 20px 12px;
+    display: flex; align-items: center; gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+  }
+  .avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: var(--elevated);
+    color: var(--text);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  .avatar.amber { background: var(--amber); color: #0F1923; }
+  .avatar.purple { background: #4c1d95; color: var(--purple); }
+  .avatar.blue { background: #1E3A5F; color: var(--blue); }
+  .avatar.gray { background: #334155; color: #cbd5e1; }
+  .driver .info { flex: 1; }
+  .driver .name { font-weight: 600; font-size: 13px; }
+  .driver .role { font-size: 11px; color: var(--muted); }
+  .driver .phone {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: var(--amber-dim);
+    color: var(--amber);
+    border: 1px solid var(--amber-border);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+  }
+
+  .panel-list {
+    margin: 0 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .panel-list .ttl {
+    padding: 12px 14px;
+    font-size: 12px; font-weight: 600;
+    border-bottom: 1px solid var(--border);
+  }
+  .pl-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px;
+    font-size: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .pl-item:last-child { border-bottom: 0; }
+  .pl-item .pid { color: var(--muted); width: 44px; flex-shrink: 0; font-weight: 500; }
+  .pl-item .pname { flex: 1; }
+  .pl-item .ploaded { color: var(--green); font-size: 11px; }
+  .pl-more {
+    padding: 10px 14px;
+    text-align: center;
+    color: var(--amber);
+    font-size: 12px; font-weight: 600;
+    cursor: pointer;
+    border-top: 1px solid var(--border);
+  }
+
+  .actions {
+    display: flex; flex-direction: column; gap: 8px;
+    padding: 14px 20px;
+  }
+
+  /* Variations */
+  .badge-pill {
+    display: inline-flex; align-items: center;
+    background: var(--amber-dim);
+    color: var(--amber);
+    border: 1px solid var(--amber-border);
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .vr-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .vr-title { font-size: 14px; font-weight: 600; }
+  .vr-sub { font-size: 12px; color: var(--muted); }
+  .vr-desc { font-size: 13px; margin: 8px 0; line-height: 1.4; }
+  .vr-photos { display: flex; gap: 6px; margin: 10px 0; }
+  .vr-photo {
+    width: 62px; height: 62px;
+    background:
+      linear-gradient(135deg, #243044 25%, #1A2535 25%, #1A2535 50%, #243044 50%, #243044 75%, #1A2535 75%);
+    background-size: 12px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .vr-eng {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    display: flex; align-items: center; gap: 10px;
+    margin: 10px 0;
+  }
+  .vr-eng .info { flex: 1; }
+  .vr-eng .name { font-size: 13px; font-weight: 600; }
+  .vr-eng .meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .dbp {
+    background: rgba(232,160,32,0.06);
+    border: 1px solid rgba(232,160,32,0.2);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 11px;
+    color: var(--amber);
+    margin: 10px 0;
+    display: flex; gap: 6px; align-items: flex-start;
+  }
+  .vr-actions { display: flex; gap: 8px; }
+  .vr-actions .btn { flex: 1; min-height: 40px; font-size: 13px; }
+
+  .step-indicator {
+    display: flex; align-items: center; justify-content: center;
+    gap: 6px;
+    padding: 10px 0 14px;
+  }
+  .step-indicator .si {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--elevated);
+  }
+  .step-indicator .si.active { background: var(--amber); }
+  .step-indicator .si.done { background: #16a34a; }
+
+  label.field {
+    display: block;
+    margin: 0 20px 12px;
+  }
+  label.field .lab {
+    font-size: 11px; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.06em;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .input, .select, .textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    padding: 12px 14px;
+    outline: none;
+  }
+  .input:focus, .select:focus, .textarea:focus {
+    border-color: var(--amber-border);
+  }
+  .textarea { resize: none; min-height: 90px; }
+
+  .photo-row {
+    display: flex; gap: 8px;
+    margin: 0 20px 12px;
+  }
+  .photo-add {
+    width: 62px; height: 62px;
+    background: var(--surface);
+    border: 1px dashed var(--amber-border);
+    border-radius: 8px;
+    color: var(--amber);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+  }
+
+  .priority {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin: 0 20px 16px;
+  }
+  .priority .opt {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 8px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .priority .opt .desc { font-size: 10px; color: var(--muted); margin-top: 2px; font-weight: 500; }
+  .priority .opt.active {
+    background: var(--amber-dim);
+    border-color: var(--amber-border);
+    color: var(--amber);
+  }
+  .priority .opt.active .desc { color: var(--amber); opacity: 0.7; }
+
+  .confirm-wrap {
+    text-align: center;
+    padding: 28px 24px;
+  }
+  .check-circle {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: #16a34a;
+    color: #fff;
+    margin: 0 auto 16px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .confirm-wrap h3 { margin: 0 0 6px; font-size: 18px; }
+  .confirm-wrap .meta { font-size: 12px; color: var(--green); margin-bottom: 18px; }
+  .next-steps {
+    text-align: left;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin: 16px 0;
+  }
+  .next-steps .h { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; font-weight: 600; }
+  .next-steps ol { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.6; color: var(--text); }
+
+  /* Messages */
+  .conv {
+    display: flex; gap: 12px; align-items: center;
+    padding: 13px 14px;
+    margin: 0 14px 7px;
+    border: 1px solid rgba(255,255,255,0.04);
+    border-radius: 16px;
+    background: rgba(17,28,42,0.54);
+    cursor: pointer;
+  }
+  .conv:active { background: var(--surface-2); }
+  .conv .body { flex: 1; min-width: 0; }
+  .conv .row1 { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .conv .name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .conv .time { font-size: 11px; color: var(--muted); flex-shrink: 0; }
+  .conv .preview { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+  .conv .unread {
+    width: 8px; height: 8px;
+    background: var(--amber);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .chat-head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 16px 14px;
+    background: rgba(8,17,27,0.50);
+    border-bottom: 1px solid var(--hairline);
+  }
+  .chat-back {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text); cursor: pointer;
+  }
+  .chat-head .body { flex: 1; }
+  .chat-head .name { font-size: 14px; font-weight: 600; }
+  .chat-head .tag {
+    font-size: 10px;
+    background: var(--amber-dim);
+    color: var(--amber);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-weight: 500;
+    margin-top: 2px;
+    display: inline-block;
+  }
+
+  .chat-body {
+    padding: 12px 16px 76px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .msg {
+    max-width: 75%;
+    padding: 9px 12px;
+    border-radius: 14px;
+    font-size: 13px; line-height: 1.4;
+  }
+  .msg.them {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+  }
+  .msg.me {
+    background: var(--amber);
+    color: #0F1923;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+  }
+  .msg .t { font-size: 10px; color: var(--muted); margin-top: 4px; }
+  .msg.me .t { color: rgba(15,25,35,0.6); }
+  .msg-photo {
+    width: 160px; height: 110px;
+    background:
+      linear-gradient(135deg, #243044 25%, #1A2535 25%, #1A2535 50%, #243044 50%, #243044 75%, #1A2535 75%);
+    background-size: 14px 14px;
+    border-radius: 12px;
+    align-self: flex-start;
+    border: 1px solid var(--border);
+  }
+  .chat-input {
+    margin: 0 16px;
+    background: rgba(17,28,42,0.86);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    display: flex; align-items: center;
+    padding: 4px 4px 4px 14px;
+    gap: 8px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 12px;
+    z-index: 8;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.32);
+  }
+  .chat-input input {
+    flex: 1;
+    background: transparent; border: 0; outline: 0;
+    color: var(--text);
+    font-family: inherit; font-size: 13px;
+    padding: 8px 0;
+  }
+  .chat-input .clip {
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .chat-input .send {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--amber);
+    color: #0F1923;
+    display: flex; align-items: center; justify-content: center;
+    border: 0; cursor: pointer;
+  }
+
+  #screen-messages {
+    position: relative;
+    min-height: calc(844px - 47px - 78px);
+    padding-bottom: 84px;
+  }
+  #msg-chat-view {
+    min-height: calc(844px - 47px - 78px);
+    position: relative;
+  }
+  .message-list {
+    padding-bottom: 74px;
+  }
+  .message-composer {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 12px;
+    z-index: 9;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 48px;
+    padding: 5px 5px 5px 14px;
+    border-radius: 24px;
+    border: 1px solid var(--border);
+    background: rgba(17,28,42,0.94);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.32);
+  }
+  .message-composer .clip {
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+  }
+  .message-composer input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+  }
+  .message-composer input::placeholder { color: var(--muted); }
+  .message-composer .send {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 0;
+    background: var(--amber);
+    color: #0F1923;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .delivered-card {
+    margin: 0 20px 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 12px;
+  }
+  .delivered-card .l { color: var(--text); font-weight: 500; }
+  .delivered-card .r { font-size: 11px; }
+
+  /* Breakdown (replaces floor plan) */
+  .breakdown {
+    margin-top: 14px;
+    background: rgba(8,17,27,0.62);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+  }
+  .bd-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .bd-inline-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-top: 4px;
+  }
+  .bd-cell {
+    flex: 0 0 74px;
+  }
+  .bd-cell .bd-name {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0;
+    margin-top: 6px;
+  }
+  .bd-blockbar {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 2px;
+    height: 17px;
+  }
+  .bd-blockbar span {
+    border-radius: 1px;
+    background: #243044;
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+  .bd-blockbar span.fill { background: var(--amber); border-color: rgba(232,160,32,0.3); }
+  .bd-cell.done .bd-blockbar span.fill { background: #22c55e; border-color: rgba(34,197,94,0.32); }
+  .bd-connector {
+    width: 16px;
+    height: 1px;
+    background: rgba(255,255,255,0.18);
+    margin-top: 8px;
+    flex: 0 0 16px;
+  }
+  .bd-row { padding: 8px 0; border-bottom: 1px dashed var(--border); }
+  .bd-row:last-child { border-bottom: 0; padding-bottom: 0; }
+  .bd-row:first-child { padding-top: 0; }
+  .bd-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 6px; }
+  .bd-name { font-size: 13px; font-weight: 600; }
+  .bd-count { font-size: 12px; color: var(--muted); }
+  .bd-count b { color: var(--text); font-weight: 700; font-size: 14px; }
+  .bd-bar {
+    height: 8px;
+    background: var(--elevated);
+    border-radius: 3px;
+    overflow: hidden;
+    display: flex;
+  }
+  .bd-seg.done { background: #22c55e; }
+  .bd-seg.prog { background: var(--amber); }
+  .bd-meta {
+    display: flex; gap: 12px;
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--muted);
+    flex-wrap: wrap;
+  }
+  .bd-meta .sw { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; vertical-align: 0px; }
+
+  /* Delivery v2: full-bg map + floating sheet */
+  .delivery-shell {
+    position: relative;
+    height: calc(844px - 47px - 78px);
+    width: 100%;
+  }
+  .map-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(900px 500px at 70% 20%, rgba(242,169,27,0.08), transparent 60%),
+      linear-gradient(135deg, #06101B 0%, #142237 100%);
+    overflow: hidden;
+  }
+  #delivery-map {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: #0a121b;
+  }
+  .map-fallback {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+  .map-bg.google-ready .map-fallback { display: none; }
+  .map-bg .grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .map-bg .street-h {
+    position: absolute; left: -10%; right: -10%;
+    height: 14px;
+    background: rgba(255,255,255,0.045);
+    transform: rotate(-2deg);
+  }
+  .map-bg .street-v {
+    position: absolute; top: -10%; bottom: -10%;
+    width: 14px;
+    background: rgba(255,255,255,0.045);
+  }
+  .map-bg .street-d {
+    position: absolute;
+    height: 10px;
+    background: rgba(255,255,255,0.035);
+    transform-origin: left center;
+  }
+  .map-bg .truck-marker {
+    position: absolute;
+    width: 36px; height: 36px;
+    background: var(--amber);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #0F1923;
+    box-shadow: 0 0 0 8px rgba(232,160,32,0.16), 0 0 28px rgba(232,160,32,0.45);
+    z-index: 3;
+  }
+  .map-bg .truck-marker::before {
+    content: '';
+    position: absolute;
+    inset: -10px;
+    border-radius: 50%;
+    border: 2px solid rgba(232,160,32,0.5);
+    animation: ping 1.6s ease-out infinite;
+  }
+  @keyframes ping {
+    0% { transform: scale(0.7); opacity: 1; }
+    100% { transform: scale(1.6); opacity: 0; }
+  }
+  .map-bg .dest-pin {
+    position: absolute;
+    z-index: 3;
+    color: #ef4444;
+  }
+  .delivery-top {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    z-index: 4;
+    padding: 10px 18px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: linear-gradient(180deg, rgba(8,17,27,0.92) 0%, rgba(8,17,27,0) 100%);
+    backdrop-filter: blur(6px);
+  }
+  .dl-title {
+    font-size: 16px; font-weight: 700;
+  }
+  .dl-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(15,25,35,0.7);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    backdrop-filter: blur(8px);
+  }
+  .dl-pill .dot {
+    width: 6px; height: 6px; border-radius: 50%; background: #22c55e;
+    box-shadow: 0 0 0 3px rgba(34,197,94,0.2);
+  }
+
+  .project-chip {
+    position: absolute;
+    top: 60px; left: 50%; transform: translateX(-50%);
+    z-index: 4;
+    background: rgba(17,28,42,0.88);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 10px 14px;
+    backdrop-filter: blur(10px);
+    text-align: center;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    min-width: 240px;
+  }
+  .project-chip .l { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
+  .project-chip .v { font-size: 14px; font-weight: 700; margin-top: 2px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .project-chip .pkg-id-inline { font-size: 11px; color: var(--amber); font-weight: 600; }
+
+  .floating-sheet {
+    position: absolute;
+    bottom: 14px; left: 16px; right: 16px;
+    z-index: 5;
+    background: rgba(17,28,42,0.96);
+    border-top: 1px solid var(--border);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 8px 16px 16px;
+    box-shadow: 0 -10px 32px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.02) inset;
+    max-height: 62%;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+  .floating-sheet::-webkit-scrollbar { display: none; }
+  .sheet-handle {
+    width: 36px; height: 4px;
+    background: var(--elevated);
+    border-radius: 2px;
+    margin: 4px auto 12px;
+  }
+  .eta-row {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .eta-row .lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
+  .eta-row .v { font-size: 26px; font-weight: 700; color: var(--amber); letter-spacing: -0.02em; }
+  .eta-sub { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+  .eta-sub b { color: var(--text); font-weight: 600; }
+
+  .driver-compact {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .driver-compact .info { flex: 1; }
+  .driver-compact .name { font-size: 13px; font-weight: 600; }
+  .driver-compact .role { font-size: 11px; color: var(--muted); margin-top: 1px; }
+  .driver-compact .call {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--amber-dim);
+    color: var(--amber);
+    border: 1px solid var(--amber-border);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+  }
+
+  .sheet-actions {
+    margin-top: 12px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+
+  .route-strip {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 8px;
+    margin: 12px 0 4px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: rgba(8,17,27,0.48);
+    border: 1px solid var(--hairline);
+  }
+  .route-strip .place { min-width: 0; }
+  .route-strip .label {
+    color: var(--muted-2);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .route-strip .value {
+    margin-top: 2px;
+    font-size: 12px;
+    font-weight: 650;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .route-strip .arrow {
+    color: var(--amber);
+    font-size: 15px;
+    font-weight: 800;
+  }
+
+  /* Variation v2 — direct, no multi-step page */
+  .vr-tabs {
+    display: flex; gap: 6px;
+    padding: 0 20px 12px;
+  }
+  .vr-tabs .vt {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    flex: 1;
+  }
+  .vr-tabs .vt .ct {
+    margin-left: 6px;
+    background: var(--elevated);
+    color: var(--muted);
+    padding: 1px 6px;
+    border-radius: 8px;
+    font-size: 10px;
+  }
+  .vr-tabs .vt.active {
+    background: var(--amber-dim);
+    color: var(--amber);
+    border-color: var(--amber-border);
+  }
+  .vr-tabs .vt.active .ct { background: var(--amber); color: #0F1923; }
+
+  /* New variation: bottom sheet form */
+  .sheet-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 50;
+    display: none;
+  }
+  .sheet-overlay.show { display: block; }
+  .form-sheet {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-radius: 20px 20px 0 0;
+    padding: 8px 0 20px;
+    max-height: 88%;
+    overflow-y: auto;
+    scrollbar-width: none;
+    transform: translateY(100%);
+    transition: transform 0.28s ease;
+  }
+  .form-sheet.show { transform: translateY(0); }
+  .form-sheet::-webkit-scrollbar { display: none; }
+  .fs-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 20px 14px;
+  }
+  .fs-head .ttl { font-size: 16px; font-weight: 700; }
+  .fs-close {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--elevated);
+    border: 0;
+    color: var(--text);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* Floating new variation FAB */
+  .fab-new-vr {
+    position: sticky;
+    bottom: 12px;
+    margin: 16px 20px 0;
+    display: flex;
+  }
+
+  /* Hint label */
+  .hint {
+    text-align: center;
+    color: #475569;
+    font-size: 11px;
+    margin-top: 18px;
+  }
+</style>
+</head>
+<body>
+<div class="phone" id="phone">
+
+  <!-- Notch -->
+  <div class="notch"></div>
+
+  <!-- Status bar -->
+  <div class="status-bar">
+    <span>9:41</span>
+    <div class="right">
+      <!-- signal -->
+      <svg width="17" height="11" viewBox="0 0 17 11" fill="none">
+        <rect x="0" y="7" width="3" height="4" rx="0.5" fill="#F0F4F8"/>
+        <rect x="4.5" y="5" width="3" height="6" rx="0.5" fill="#F0F4F8"/>
+        <rect x="9" y="3" width="3" height="8" rx="0.5" fill="#F0F4F8"/>
+        <rect x="13.5" y="0" width="3" height="11" rx="0.5" fill="#F0F4F8"/>
+      </svg>
+      <!-- wifi -->
+      <svg width="15" height="11" viewBox="0 0 15 11" fill="none">
+        <path d="M7.5 8.8 L9 10.3 L7.5 11 L6 10.3 Z" fill="#F0F4F8"/>
+        <path d="M3.5 5.5 a5.5 5.5 0 0 1 8 0" stroke="#F0F4F8" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+        <path d="M0.7 2.5 a10.5 10.5 0 0 1 13.6 0" stroke="#F0F4F8" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+      </svg>
+      <!-- battery -->
+      <svg width="27" height="12" viewBox="0 0 27 12" fill="none">
+        <rect x="0.5" y="0.5" width="22" height="11" rx="2.5" stroke="#F0F4F8" opacity="0.5"/>
+        <rect x="2" y="2" width="19" height="8" rx="1.5" fill="#F0F4F8"/>
+        <rect x="24" y="4" width="2" height="4" rx="1" fill="#F0F4F8" opacity="0.5"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- SCREENS -->
+  <div class="screens" id="screens">
+
+    <!-- ============ HOME ============ -->
+    <section class="screen active" data-screen-label="01 Home" id="screen-home">
+      <div class="topbar">
+        <div style="font-size:18px; font-weight:740; letter-spacing:0;">FrameOS</div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div class="site-pill">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-7.6-7-12a7 7 0 0 1 14 0c0 4.4-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>
+            <span class="label">34 Banksia Ave</span>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <button class="icon-btn" aria-label="Notifications">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+            <span class="dot"></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="home-hero">
+        <div class="eyebrow">Live Site Control</div>
+        <div class="site">34 Banksia Ave<br>Frame Supply</div>
+        <div class="meta">Next delivery: Wetherill Park to Western Sydney · today 3:45 PM</div>
+        <div class="hero-kpis">
+          <div class="kpi"><div class="num">72%</div><div class="lbl">Ready</div></div>
+          <div class="kpi"><div class="num">2</div><div class="lbl">Open items</div></div>
+          <div class="kpi"><div class="num">40m</div><div class="lbl">Driver ETA</div></div>
+        </div>
+      </div>
+
+      <div class="h-section">Overview</div>
+      <div class="stat-grid">
+        <div class="stat"><div class="v">3</div><div class="l">Active Packages</div></div>
+        <div class="stat red"><div class="v">1</div><div class="l">Delayed</div></div>
+        <div class="stat amber"><div class="v">2</div><div class="l">Awaiting Sign-off</div></div>
+        <div class="stat green"><div class="v">1</div><div class="l">Completed</div></div>
+      </div>
+
+      <div class="h-section" style="margin-top:14px;">Recent Activity</div>
+      <div class="feed-item">
+        <div class="feed-dot g"></div>
+        <div class="feed-text">FO-2847 loaded onto truck. ETA 3:45 PM<div class="feed-time">2:34 PM</div></div>
+      </div>
+      <div class="feed-item">
+        <div class="feed-dot a"></div>
+        <div class="feed-text">Variation VR-0044 submitted. Awaiting engineer.<div class="feed-time">11:05 AM</div></div>
+      </div>
+      <div class="feed-item">
+        <div class="feed-dot r"></div>
+        <div class="feed-text">FO-2819 rescheduled. New ETA: 15 May<div class="feed-time">9:18 AM</div></div>
+      </div>
+
+      <div class="h-section" style="margin-top:14px;">Active Packages</div>
+
+      <div class="card tap" onclick="goPackages('FO-2847')">
+        <div class="pkg-row">
+          <div style="flex:1; min-width:0;">
+            <div class="pkg-id">FO-2847</div>
+            <div class="pkg-title">L1 Wall Frames + Roof Trusses</div>
+          </div>
+          <span class="pill manu">Manufacturing</span>
+        </div>
+        <div class="progress"><i style="width:52%"></i></div>
+        <div class="pkg-meta"><span class="eta">ETA 12 May · 52%</span><span class="link">View progress →</span></div>
+      </div>
+
+      <div class="card tap" onclick="goPackages('FO-2819')">
+        <div class="pkg-row">
+          <div style="flex:1; min-width:0;">
+            <div class="pkg-id">FO-2819</div>
+            <div class="pkg-title">Ground Floor Frames</div>
+          </div>
+          <span class="pill delayed">Delayed</span>
+        </div>
+        <div class="progress danger"><i style="width:85%"></i></div>
+        <div class="pkg-meta"><span class="eta" style="color:#FCA5A5;">Was 10 May → 15 May</span><span class="link">Track delivery →</span></div>
+      </div>
+
+      <div class="card tap" onclick="goPackages('FO-2831')">
+        <div class="pkg-row">
+          <div style="flex:1; min-width:0;">
+            <div class="pkg-id">FO-2831</div>
+            <div class="pkg-title">Level 2 Wall Frames</div>
+          </div>
+          <span class="pill engi">Engineering</span>
+        </div>
+        <div class="progress"><i style="width:20%"></i></div>
+        <div class="pkg-meta"><span class="eta">ETA 28 May · 20%</span><span class="link">View progress →</span></div>
+      </div>
+
+    </section>
+
+    <!-- ============ PACKAGES ============ -->
+    <section class="screen" data-screen-label="02 Packages" id="screen-packages">
+      <div class="topbar">
+        <div style="font-size:18px; font-weight:700;">Packages</div>
+        <button class="icon-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+      </div>
+
+      <div class="search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7A8FA0" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+        <input placeholder="Search FO-… or panel ID" />
+      </div>
+
+      <div class="chips" id="pkg-chips">
+        <button class="chip active" data-filter="all">All · 3</button>
+        <button class="chip" data-filter="active">Active · 2</button>
+        <button class="chip" data-filter="delayed">Delayed · 1</button>
+        <button class="chip" data-filter="completed">Completed · 4</button>
+      </div>
+
+      <div id="pkg-list"></div>
+
+      <div class="hint">3 of 7 packages shown</div>
+    </section>
+
+    <!-- ============ DELIVERY ============ -->
+    <section class="screen" data-screen-label="03 Delivery" id="screen-delivery">
+      <div class="delivery-shell">
+
+        <!-- Full-bleed map background -->
+        <div class="map-bg">
+          <div id="delivery-map" aria-label="Google map from Wetherill Park to Western Sydney"></div>
+          <div class="map-fallback" aria-hidden="true">
+            <div class="grid"></div>
+            <div class="street-h" style="top:22%;"></div>
+            <div class="street-h" style="top:48%;"></div>
+            <div class="street-h" style="top:74%;"></div>
+            <div class="street-v" style="left:18%;"></div>
+            <div class="street-v" style="left:54%;"></div>
+            <div class="street-v" style="left:82%;"></div>
+            <svg style="position:absolute;inset:0;width:100%;height:100%;" viewBox="0 0 390 540" preserveAspectRatio="none">
+              <path d="M 30 480 L 30 380 L 130 380 L 130 240 L 240 240 L 240 130 L 350 130"
+                    fill="none" stroke="#E8A020" stroke-width="3" stroke-dasharray="7 6" stroke-linecap="round" opacity="0.85"/>
+              <circle cx="30" cy="480" r="6" fill="#22c55e"/>
+            </svg>
+            <div class="truck-marker" style="top:200px; left:178px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M3 6h11v9H3z"/><path d="M14 9h4l3 3v3h-7z"/><circle cx="7" cy="17" r="2" fill="#0F1923"/><circle cx="17" cy="17" r="2" fill="#0F1923"/></svg>
+            </div>
+            <svg class="dest-pin" style="top:108px; left:336px; width:26px; height:26px;" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z"/><circle cx="12" cy="9" r="2.5" fill="#0F1923"/></svg>
+          </div>
+        </div>
+
+        <!-- Top overlay -->
+        <div class="delivery-top">
+          <div class="dl-title">Delivery</div>
+          <span class="dl-pill"><span class="dot"></span>Live tracking</span>
+        </div>
+
+        <!-- Floating project label -->
+        <div class="project-chip">
+          <div class="l">Heading to</div>
+          <div class="v">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-7.6-7-12a7 7 0 0 1 14 0c0 4.4-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>
+            WSU Parramatta South
+          </div>
+          <div class="pkg-id-inline">From Wetherill Park · FO-2847</div>
+        </div>
+
+        <!-- Floating bottom sheet -->
+        <div class="floating-sheet">
+          <div class="sheet-handle"></div>
+
+          <div class="eta-row">
+            <div class="lbl">Arrives</div>
+            <div class="v">~3:45 PM</div>
+          </div>
+          <div class="eta-sub">Today · <b>in about 40 min</b> · Truck 2 of 3</div>
+
+          <div class="route-strip">
+            <div class="place">
+              <div class="label">Pickup</div>
+              <div class="value">Wetherill Park</div>
+            </div>
+            <div class="arrow">→</div>
+            <div class="place">
+              <div class="label">Drop-off</div>
+              <div class="value">WSU Parramatta South</div>
+            </div>
+          </div>
+
+          <div class="driver-compact">
+            <div class="avatar">MC</div>
+            <div class="info">
+              <div class="name">Mike Chen</div>
+              <div class="role">Driver · Truck 2 · Hino 500</div>
+            </div>
+            <button class="call" aria-label="Call driver">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </button>
+          </div>
+
+          <div class="sheet-actions">
+            <button class="btn btn-primary btn-block" id="signoff-btn" onclick="signOff()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px;"><polyline points="20 6 9 17 4 12"/></svg>
+              Confirm Delivery + Sign Off
+            </button>
+            <button class="btn btn-ghost btn-block">Report Issue</button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============ VARIATIONS ============ -->
+    <section class="screen" data-screen-label="04 Variations" id="screen-variations">
+      <div class="topbar">
+        <div style="font-size:18px; font-weight:700;">Variations</div>
+        <button class="btn btn-primary" style="min-height:36px; font-size:13px; padding:6px 14px;" onclick="openVrSheet()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New
+        </button>
+      </div>
+
+      <div class="vr-tabs">
+        <button class="vt active" data-vrf="open">Open <span class="ct">2</span></button>
+        <button class="vt" data-vrf="resolved">Resolved <span class="ct">5</span></button>
+      </div>
+
+      <div id="vr-open-list">
+        <div class="card">
+          <div class="vr-head">
+            <div>
+              <div class="pkg-id">VR-0044 · W-19</div>
+              <div class="vr-title">Window opening — move 200mm east</div>
+            </div>
+            <span class="pill varpend">Pending</span>
+          </div>
+          <div class="vr-sub">Submitted 30 Apr · Awaiting John Nguyen</div>
+          <div class="vr-photos">
+            <div class="vr-photo"></div>
+            <div class="vr-photo"></div>
+          </div>
+          <div class="dbp">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px;"><path d="M10.3 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <span>DBP Act s.6A re-certification required</span>
+          </div>
+          <div class="vr-actions">
+            <button class="btn btn-ghost">Follow Up</button>
+            <button class="btn btn-primary">View Details</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="vr-head">
+            <div>
+              <div class="pkg-id">VR-0042 · L-07</div>
+              <div class="vr-title">Lintel size revision</div>
+            </div>
+            <span class="pill varpend">Pending</span>
+          </div>
+          <div class="vr-sub">Submitted 29 Apr · Awaiting cost approval</div>
+          <div class="vr-actions">
+            <button class="btn btn-ghost">Follow Up</button>
+            <button class="btn btn-primary">View Details</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="vr-resolved-list" style="display:none;">
+        <div class="card">
+          <div class="vr-head">
+            <div>
+              <div class="pkg-id">VR-0039 · D-04</div>
+              <div class="vr-title">Door width 820 → 920mm</div>
+            </div>
+            <span class="pill approved">Approved</span>
+          </div>
+          <div class="vr-sub">Approved 28 Apr · +$340</div>
+        </div>
+        <div class="card">
+          <div class="vr-head">
+            <div>
+              <div class="pkg-id">VR-0031 · L-07</div>
+              <div class="vr-title">Lintel upgrade C200 → C250</div>
+            </div>
+            <span class="pill approved">Approved</span>
+          </div>
+          <div class="vr-sub">Approved 22 Apr · +$880</div>
+        </div>
+      </div>
+
+      <!-- Bottom-sheet form -->
+      <div class="sheet-overlay" id="vr-overlay" onclick="closeVrSheet(event)">
+        <div class="form-sheet" id="vr-sheet" onclick="event.stopPropagation()">
+          <div class="sheet-handle"></div>
+          <div class="fs-head">
+            <div class="ttl">New variation</div>
+            <button class="fs-close" onclick="closeVrSheet()" aria-label="Close">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+
+          <div id="vr-form">
+            <label class="field">
+              <div class="lab">Panel affected</div>
+              <select class="select">
+                <option>W-19 · North wall · 4800×2700</option>
+                <option>W-09 · North wall · 6000×2700</option>
+                <option>L-07 · Lintel · 2400 span</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <div class="lab">What's changing</div>
+              <textarea class="textarea" placeholder="Describe the change…">Move window opening 200mm east to align with internal stud spacing.</textarea>
+            </label>
+
+            <div style="font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:600; margin: 0 20px 6px;">Photos</div>
+            <div class="photo-row">
+              <div class="photo-add">+</div>
+            </div>
+
+            <div style="font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:600; margin: 0 20px 8px;">Priority</div>
+            <div class="priority" id="priority-grid">
+              <div class="opt active" data-p="standard">Standard<div class="desc">~2 hrs</div></div>
+              <div class="opt" data-p="urgent">Urgent<div class="desc">~30 min</div></div>
+              <div class="opt" data-p="critical">Critical<div class="desc">Now</div></div>
+            </div>
+
+            <div style="margin: 0 20px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px; display:flex; align-items:center; gap:10px;">
+              <div class="avatar purple">JN</div>
+              <div style="flex:1;">
+                <div style="font-size:12px; color:var(--muted);">Routes to</div>
+                <div style="font-size:13px; font-weight:600;">John Nguyen · Structerre</div>
+              </div>
+              <span class="pill installed">Online</span>
+            </div>
+
+            <div class="dbp" style="margin: 0 20px 16px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px;"><path d="M10.3 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <span>DBP Act s.6A audit trail will be auto-generated</span>
+            </div>
+
+            <div style="padding: 0 20px;">
+              <button class="btn btn-primary btn-block" onclick="submitVariation()">Submit request</button>
+            </div>
+          </div>
+
+          <div id="vr-success" style="display:none;" class="confirm-wrap">
+            <div class="check-circle">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <h3>VR-0045 submitted</h3>
+            <div class="meta">DBP Act audit trail auto-generated ✓</div>
+            <div class="next-steps">
+              <div class="h">What happens next</div>
+              <ol>
+                <li>John Nguyen is notified now (push + email).</li>
+                <li>Manufacturing for W-19 is paused until sign-off.</li>
+                <li>You'll get a verdict within ~2 hours.</li>
+              </ol>
+            </div>
+            <button class="btn btn-primary btn-block" onclick="closeVrSheet()">Done</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ MESSAGES ============ -->
+    <section class="screen" data-screen-label="05 Messages" id="screen-messages">
+      <div id="msg-list-view">
+        <div class="topbar">
+          <div style="font-size:18px; font-weight:700;">Messages</div>
+        </div>
+
+        <div class="search">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7A8FA0" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+          <input placeholder="Search messages" />
+        </div>
+
+        <div class="conv" onclick="openChat()">
+          <div class="avatar amber">NG</div>
+          <div class="body">
+            <div class="row1"><div class="name">Next Gen. Steel Frame &amp; Trusses</div><div class="time">2:31 PM</div></div>
+            <div class="preview">Your W-09 to W-14 panels are ready for QC. Photos attached.</div>
+          </div>
+          <div class="unread"></div>
+        </div>
+
+        <div class="conv">
+          <div class="avatar purple">JN</div>
+          <div class="body">
+            <div class="row1"><div class="name">John Nguyen · Engineer</div><div class="time">11:42 AM</div></div>
+            <div class="preview">I've reviewed VR-0044. The lintel at L-07 will need…</div>
+          </div>
+        </div>
+
+        <div class="conv">
+          <div class="avatar blue">DD</div>
+          <div class="body">
+            <div class="row1"><div class="name">Delivery Driver · Truck 2</div><div class="time">9:55 AM</div></div>
+            <div class="preview">On the way, ETA around 3:45. Give me a call if…</div>
+          </div>
+        </div>
+
+        <div class="conv">
+          <div class="avatar gray">SA</div>
+          <div class="body">
+            <div class="row1"><div class="name">SFS Admin</div><div class="time">Yesterday</div></div>
+            <div class="preview">Re FO-2819 delay — apologies for the inconvenience…</div>
+          </div>
+        </div>
+        <div class="message-composer">
+          <span class="clip">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05 12.25 20.24a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+          </span>
+          <input placeholder="Message team or driver..." onclick="openChat()" />
+          <button class="send" onclick="openChat()" aria-label="Open message">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Chat view -->
+      <div id="msg-chat-view" style="display:none;">
+        <div class="chat-head">
+          <button class="chat-back" onclick="closeChat()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <div class="avatar amber">NG</div>
+          <div class="body">
+            <div class="name">Next Gen. Steel Frame &amp; Trusses</div>
+            <span class="tag">FO-2847</span>
+          </div>
+        </div>
+
+        <div class="chat-body" id="chat-body">
+          <div class="msg them">Your W-09 to W-14 panels are ready for QC. Photos attached.<div class="t">2:31 PM</div></div>
+          <div class="msg-photo"></div>
+          <div class="msg me">Great — any update on the trusses T-01 to T-06?<div class="t">2:45 PM</div></div>
+          <div class="msg them">Trusses rolling tomorrow morning. Will send update by 9am.<div class="t">2:48 PM</div></div>
+          <div class="msg me">Perfect. Please also confirm load order — T-01 first on truck.<div class="t">3:02 PM</div></div>
+        </div>
+
+        <div class="chat-input">
+          <span class="clip">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05 12.25 20.24a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+          </span>
+          <input id="chat-msg-input" placeholder="Type a message…" />
+          <button class="send" onclick="sendChatMsg()" aria-label="Send">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="tabbar" id="tabbar">
+    <button class="tab active" data-tab="home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 3l9 8"/><path d="M5 10v10h14V10"/></svg>
+      <span class="tab-label">Home</span>
+    </button>
+    <button class="tab" data-tab="packages">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+      <span class="tab-label">Packages</span>
+    </button>
+    <button class="tab" data-tab="delivery">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="14" height="11" rx="1"/><path d="M15 9h4l3 3v5h-7z"/><circle cx="6" cy="19" r="2"/><circle cx="17" cy="19" r="2"/></svg>
+      <span class="tab-label">Delivery</span>
+    </button>
+    <button class="tab" data-tab="variations">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
+      <span class="tab-label">Variations</span>
+    </button>
+    <button class="tab" data-tab="messages">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+      <span class="tab-label">Messages</span>
+    </button>
+  </nav>
+
+</div>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAv0b5k_YqdxGP19gGcsmJM5MyhuKjREDo",
+  authDomain: "quot-ba823.firebaseapp.com",
+  projectId: "quot-ba823",
+  storageBucket: "quot-ba823.firebasestorage.app",
+  messagingSenderId: "943513643901",
+  appId: "1:943513643901:web:0525e00bba1cf02868fa14",
+  measurementId: "G-PV24573L8Z"
+};
+
+/* ===== Mock data for packages ===== */
+const PACKAGES = [
+  {
+    id: 'FO-2847',
+    title: 'L1 Wall Frames + Roof Trusses',
+    pill: { cls: 'manu', label: 'Manufacturing' },
+    progress: 52,
+    eta: 'ETA 12 May',
+    stage: 2,
+    breakdown: [
+      { type: 'Wall panels', total: 24, done: 14, prog: 6, todo: 4 },
+      { type: 'Roof trusses', total: 12, done: 4, prog: 4, todo: 4 },
+      { type: 'Lintels', total: 8, done: 6, prog: 0, todo: 2 }
+    ],
+    compliance: { dbp: 'Filed 28 Apr', variation: 'W-19 Pending' },
+    action: 'Review Variation',
+    actionTab: 'variations',
+    delayed: false
+  },
+  {
+    id: 'FO-2819',
+    title: 'Ground Floor Frames',
+    pill: { cls: 'delayed', label: 'Delayed · In Transit' },
+    progress: 85,
+    eta: 'Was 10 May → 15 May',
+    etaDanger: true,
+    stage: 5,
+    breakdown: [
+      { type: 'Wall panels', total: 18, done: 18, prog: 0, todo: 0 },
+      { type: 'Lintels', total: 4, done: 4, prog: 0, todo: 0 }
+    ],
+    compliance: { dbp: 'Filed 18 Apr', variation: null },
+    action: 'Track Delivery',
+    actionTab: 'delivery',
+    delayed: true
+  },
+  {
+    id: 'FO-2831',
+    title: 'Level 2 Wall Frames',
+    pill: { cls: 'engi', label: 'Engineering' },
+    progress: 20,
+    eta: 'ETA 28 May',
+    stage: 1,
+    breakdown: [
+      { type: 'Wall panels', total: 16, done: 0, prog: 4, todo: 12 },
+      { type: 'Lintels', total: 6, done: 0, prog: 1, todo: 5 }
+    ],
+    compliance: { dbp: 'Pending', variation: null },
+    action: 'View in Design Hub',
+    delayed: false
+  }
+];
+
+const STAGES = ['Design Lock','Engineering','Manufacturing','QC/Pack','Dispatch','In Transit','On Site','Installed'];
+
+/* ===== Render packages list ===== */
+function renderPackages(filter='all') {
+  const list = document.getElementById('pkg-list');
+  list.innerHTML = '';
+  const items = PACKAGES.filter(p => {
+    if (filter === 'all') return true;
+    if (filter === 'delayed') return p.delayed;
+    if (filter === 'active') return !p.delayed;
+    if (filter === 'completed') return false;
+    return true;
+  });
+  items.forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.dataset.id = p.id;
+    card.innerHTML = `
+      <div class="pkg-row" onclick="togglePkg('${p.id}')">
+        <div style="flex:1; min-width:0;">
+          <div class="pkg-id">${p.id}</div>
+          <div class="pkg-title">${p.title}</div>
+        </div>
+        <span class="pill ${p.pill.cls}">${p.pill.label}</span>
+      </div>
+      <div class="progress ${p.delayed ? 'danger' : ''}"><i style="width:${p.progress}%"></i></div>
+      <div class="pkg-meta" onclick="togglePkg('${p.id}')">
+        <span class="eta" ${p.etaDanger ? 'style="color:#FCA5A5;"' : ''}>${p.eta} · ${p.progress}%</span>
+        <span class="link" id="link-${p.id}">Expand ↓</span>
+      </div>
+      <div class="pkg-expand" id="expand-${p.id}" style="display:none;">
+        ${renderStepper(p.stage)}
+        ${renderBreakdown(p)}
+        <div class="compl">
+          <div class="row"><span class="ok">✓</span><span>DBP Declaration · ${p.compliance.dbp}</span></div>
+          ${p.compliance.variation ? `<div class="row"><span class="warn">⚠</span><span>Variation ${p.compliance.variation}</span></div>` : ''}
+        </div>
+        <div style="margin-top:12px;">
+          <button class="btn btn-primary btn-block" onclick="event.stopPropagation(); switchTab('${p.actionTab||'packages'}')">${p.action}</button>
+        </div>
+      </div>
+    `;
+    list.appendChild(card);
+  });
+}
+
+function renderStepper(currentIdx) {
+  let html = '<div class="stepper-wrap"><div class="stepper">';
+  STAGES.forEach((s, i) => {
+    const cls = i < currentIdx ? 'done' : (i === currentIdx ? 'current' : '');
+    const node = i < currentIdx
+      ? '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+      : (i === currentIdx
+        ? '<span style="width:6px;height:6px;background:#0F1923;border-radius:50%;display:block;"></span>'
+        : '');
+    html += `<div class="step ${cls}"><div class="node">${node}</div><div class="lbl">${s}</div></div>`;
+  });
+  html += '</div></div>';
+  return html;
+}
+
+function renderBreakdown(p) {
+  // Sequential workflow: Wall -> Roof. Each step uses filled blocks.
+  const order = ['Wall panels', 'Roof trusses'];
+  const short = { 'Wall panels': 'Wall', 'Roof trusses': 'Roof' };
+  let cells = '';
+  order.forEach((name, idx) => {
+    const b = p.breakdown.find(x => x.type === name);
+    let pct = 0;
+    if (b) pct = ((b.done + b.prog) / b.total) * 100;
+    const fills = Math.round((pct / 100) * 6);
+    const blocks = Array.from({length: 6}, (_, i) => `<span class="${i < fills ? 'fill' : ''}"></span>`).join('');
+    const cls = pct >= 100 ? ' done' : '';
+    if (idx > 0) cells += '<div class="bd-connector"></div>';
+    cells += `
+      <div class="bd-cell${cls}">
+        <div class="bd-blockbar">${blocks}</div>
+        <div class="bd-name">${short[name]}</div>
+      </div>`;
+  });
+  return `<div class="breakdown">
+    <div class="bd-title">Process</div>
+    <div class="bd-inline-row">${cells}</div>
+  </div>`;
+}
+
+function renderFloor_unused(p) {
+  // Build a simple 6-cell rectangular floor plan with panels colour-coded.
+  const layouts = {
+    main: [
+      // x, y, w, h, status
+      [10, 10, 80, 22, 'done'],   // top wall left
+      [90, 10, 60, 22, 'done'],   // top wall mid
+      [150,10, 60, 22, 'inprog'], // top wall right
+      [210,10, 60, 22, 'inprog'],
+      [10, 90, 60, 22, 'done'],
+      [70, 90, 70, 22, 'done'],
+      [140,90, 70, 22, 'var'],
+      [210,90, 60, 22, 'todo'],
+      [10, 32, 22, 58, 'done'],   // left wall
+      [248,32, 22, 58, 'inprog'], // right wall
+      // interior
+      [70, 50, 22, 40, 'done'],
+      [140,50, 22, 40, 'todo'],
+    ],
+    simple: [
+      [10, 10, 80, 22, 'done'],
+      [90, 10, 80, 22, 'done'],
+      [170,10, 80, 22, 'done'],
+      [10, 90, 80, 22, 'done'],
+      [90, 90, 80, 22, 'done'],
+      [170,90, 80, 22, 'done'],
+      [10, 32, 22, 58, 'done'],
+      [228,32, 22, 58, 'done']
+    ],
+    simple2: [
+      [10, 10, 80, 22, 'todo'],
+      [90, 10, 80, 22, 'todo'],
+      [170,10, 80, 22, 'todo'],
+      [10, 90, 80, 22, 'inprog'],
+      [90, 90, 80, 22, 'todo'],
+      [170,90, 80, 22, 'todo'],
+      [10, 32, 22, 58, 'inprog'],
+      [228,32, 22, 58, 'todo']
+    ]
+  };
+  const colors = {
+    done: '#1D6B35',
+    inprog: '#7A4F0A',
+    todo: '#2A3A4A',
+    var: '#5A1A2A'
+  };
+  const stroke = {
+    done: '#22c55e',
+    inprog: '#E8A020',
+    todo: '#475569',
+    var: '#ef4444'
+  };
+  const labels = {
+    done: 'Manufactured',
+    inprog: 'In progress',
+    todo: 'Not started',
+    var: 'Variation pending'
+  };
+  const data = layouts[p.floor] || layouts.simple;
+  let cells = '';
+  data.forEach((c, i) => {
+    const [x, y, w, h, s] = c;
+    const pid = `W-${String(i+1).padStart(2,'0')}`;
+    cells += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="2"
+      fill="${colors[s]}" stroke="${stroke[s]}" stroke-width="1"
+      data-pid="${pid}" data-status="${labels[s]}" data-w="${w*25}" data-h="${h*25}"
+      style="cursor:pointer;" onclick="event.stopPropagation(); showPanel(this, '${p.id}')"/>`;
+  });
+
+  return `
+    <div class="floor-wrap" style="margin: 12px 0 0; padding:14px;">
+      <div class="floor-title">
+        <span>Floor plan · ${p.id}</span>
+        <span class="pkg-id">${data.length} panels</span>
+      </div>
+      <div class="floor">
+        <svg viewBox="0 0 280 130" preserveAspectRatio="xMidYMid meet">
+          <rect x="2" y="2" width="276" height="126" rx="6" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1" stroke-dasharray="3 2"/>
+          ${cells}
+        </svg>
+      </div>
+      <div class="floor-tooltip" id="tt-${p.id}">Tap any panel for details.</div>
+      <div class="legend">
+        <div><span class="sw" style="background:#1D6B35"></span>Manufactured</div>
+        <div><span class="sw" style="background:#7A4F0A"></span>In progress</div>
+        <div><span class="sw" style="background:#2A3A4A"></span>Not started</div>
+        <div><span class="sw" style="background:#5A1A2A"></span>Variation pending</div>
+      </div>
+    </div>
+  `;
+}
+
+function showPanel(el, pkgId) {
+  const pid = el.dataset.pid;
+  const status = el.dataset.status;
+  const w = el.dataset.w;
+  const h = el.dataset.h;
+  const tt = document.getElementById('tt-' + pkgId);
+  tt.innerHTML = `<strong>${pid}</strong> · <strong>${w}×${h}mm</strong><br/><span style="color:var(--muted);">Status: ${status}</span>`;
+}
+
+let openPkg = null;
+function togglePkg(id) {
+  const exp = document.getElementById('expand-' + id);
+  const lnk = document.getElementById('link-' + id);
+  if (!exp) return;
+  if (openPkg && openPkg !== id) {
+    document.getElementById('expand-' + openPkg).style.display = 'none';
+    const ol = document.getElementById('link-' + openPkg);
+    if (ol) ol.textContent = 'Expand ↓';
+  }
+  if (exp.style.display === 'none' || !exp.style.display) {
+    exp.style.display = 'block';
+    lnk.textContent = 'Collapse ↑';
+    openPkg = id;
+  } else {
+    exp.style.display = 'none';
+    lnk.textContent = 'Expand ↓';
+    openPkg = null;
+  }
+}
+
+/* ===== Tab switching ===== */
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+  document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === 'screen-' + name));
+  document.getElementById('screens').scrollTop = 0;
+}
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => switchTab(t.dataset.tab));
+});
+
+function goPackages(id) {
+  switchTab('packages');
+  setTimeout(() => {
+    if (openPkg !== id) togglePkg(id);
+    const card = document.querySelector(`#pkg-list .card[data-id="${id}"]`);
+    if (card) card.scrollIntoView({block:'start'});
+    document.getElementById('screens').scrollTop = Math.max(0, (card?.offsetTop || 0) - 60);
+  }, 50);
+}
+
+/* ===== Filter chips ===== */
+document.querySelectorAll('#pkg-chips .chip').forEach(c => {
+  c.addEventListener('click', () => {
+    document.querySelectorAll('#pkg-chips .chip').forEach(x => x.classList.remove('active'));
+    c.classList.add('active');
+    renderPackages(c.dataset.filter);
+    openPkg = null;
+  });
+});
+
+/* ===== Countdown removed; ETA shown as approximate hour window ===== */
+
+/* ===== Sign off ===== */
+function signOff() {
+  const b = document.getElementById('signoff-btn');
+  b.classList.add('success');
+  b.classList.remove('btn-primary');
+  b.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-right:8px;"><polyline points="20 6 9 17 4 12"/></svg> Signed Off ✓';
+  b.disabled = true;
+}
+
+/* ===== Variation sheet ===== */
+function openVrSheet() {
+  const ov = document.getElementById('vr-overlay');
+  const sh = document.getElementById('vr-sheet');
+  document.getElementById('vr-form').style.display = 'block';
+  document.getElementById('vr-success').style.display = 'none';
+  ov.classList.add('show');
+  requestAnimationFrame(() => sh.classList.add('show'));
+}
+function closeVrSheet(e) {
+  if (e && e.target && e.target.id !== 'vr-overlay' && e.type === 'click' && e.currentTarget?.id !== 'vr-overlay') {
+    // pass
+  }
+  const ov = document.getElementById('vr-overlay');
+  const sh = document.getElementById('vr-sheet');
+  sh.classList.remove('show');
+  setTimeout(() => ov.classList.remove('show'), 280);
+}
+function collectVariationPayload() {
+  const panel = document.querySelector('#vr-form .select')?.value || '';
+  const note = document.querySelector('#vr-form .textarea')?.value || '';
+  const priority = document.querySelector('#priority-grid .opt.active')?.dataset?.p || 'standard';
+  return {
+    id: `ENQ-${Date.now()}`,
+    type: 'variation_enquiry',
+    panel,
+    note,
+    priority,
+    createdAt: new Date().toISOString()
+  };
+}
+function saveEnquiryLocal(payload) {
+  const key = 'frameos_enquiries';
+  const prev = JSON.parse(localStorage.getItem(key) || '[]');
+  prev.unshift(payload);
+  localStorage.setItem(key, JSON.stringify(prev));
+}
+function submitVariation() {
+  const payload = collectVariationPayload();
+  saveEnquiryLocal(payload);
+  document.getElementById('vr-form').style.display = 'none';
+  document.getElementById('vr-success').style.display = 'block';
+  document.getElementById('vr-sheet').scrollTop = 0;
+}
+document.querySelectorAll('#priority-grid .opt').forEach(opt => {
+  opt.addEventListener('click', () => {
+    document.querySelectorAll('#priority-grid .opt').forEach(o => o.classList.remove('active'));
+    opt.classList.add('active');
+  });
+});
+document.querySelectorAll('.vr-tabs .vt').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.vr-tabs .vt').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    const f = t.dataset.vrf;
+    document.getElementById('vr-open-list').style.display = f === 'open' ? 'block' : 'none';
+    document.getElementById('vr-resolved-list').style.display = f === 'resolved' ? 'block' : 'none';
+  });
+});
+
+/* ===== Messages ===== */
+function openChat() {
+  document.getElementById('msg-list-view').style.display = 'none';
+  document.getElementById('msg-chat-view').style.display = 'block';
+  setTimeout(() => {
+    const cb = document.getElementById('chat-body');
+    cb.scrollIntoView({block:'end'});
+  }, 50);
+}
+function closeChat() {
+  document.getElementById('msg-chat-view').style.display = 'none';
+  document.getElementById('msg-list-view').style.display = 'block';
+}
+function sendChatMsg() {
+  const inp = document.getElementById('chat-msg-input');
+  const v = inp.value.trim();
+  if (!v) return;
+  const cb = document.getElementById('chat-body');
+  const t = new Date();
+  const time = `${((t.getHours()+11)%12+1)}:${String(t.getMinutes()).padStart(2,'0')} ${t.getHours()>=12?'PM':'AM'}`;
+  const m = document.createElement('div');
+  m.className = 'msg me';
+  m.innerHTML = `${v}<div class="t">${time}</div>`;
+  cb.appendChild(m);
+  inp.value = '';
+  document.getElementById('screens').scrollTop = 9999;
+}
+document.getElementById('chat-msg-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') sendChatMsg();
+});
+
+/* ===== Delivery map ===== */
+const DELIVERY_MAP_ROUTE = {
+  origin: { lat: -33.8422, lng: 150.9004, label: 'Wetherill Park' },
+  destination: { lat: -33.8136, lng: 151.0259, label: 'Western Sydney University Parramatta South' }
+};
+
+const DELIVERY_MAP_STYLE = [
+  { elementType: 'geometry', stylers: [{ color: '#17212f' }] },
+  { elementType: 'labels.text.fill', stylers: [{ color: '#a8b3c2' }] },
+  { elementType: 'labels.text.stroke', stylers: [{ color: '#0b111a' }] },
+  { featureType: 'administrative', elementType: 'geometry.stroke', stylers: [{ color: '#2c3848' }] },
+  { featureType: 'landscape.man_made', elementType: 'geometry', stylers: [{ color: '#131d29' }] },
+  { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#1b2a3a' }] },
+  { featureType: 'poi', elementType: 'labels.text.fill', stylers: [{ color: '#718397' }] },
+  { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#2a3544' }] },
+  { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#101820' }] },
+  { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#8493a5' }] },
+  { featureType: 'transit', elementType: 'geometry', stylers: [{ color: '#202d3b' }] },
+  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#0b1824' }] },
+  { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#506272' }] }
+];
+
+function bootDeliveryMap() {
+  const shell = document.querySelector('.map-bg');
+  const el = document.getElementById('delivery-map');
+  if (!shell || !el) return;
+
+  const key = window.GOOGLE_MAPS_API_KEY || new URLSearchParams(window.location.search).get('gmapsKey');
+  if (!key) return;
+  if (window.google?.maps) {
+    initDeliveryMap();
+    return;
+  }
+  const s = document.createElement('script');
+  s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&callback=initDeliveryMap`;
+  s.async = true;
+  s.defer = true;
+  document.head.appendChild(s);
+}
+
+window.initDeliveryMap = function initDeliveryMap() {
+  const shell = document.querySelector('.map-bg');
+  const el = document.getElementById('delivery-map');
+  if (!shell || !el || !window.google?.maps) return;
+
+  const map = new google.maps.Map(el, {
+    center: DELIVERY_MAP_ROUTE.destination,
+    zoom: 12,
+    disableDefaultUI: true,
+    gestureHandling: 'none',
+    styles: DELIVERY_MAP_STYLE
+  });
+
+  const directionsService = new google.maps.DirectionsService();
+  const directionsRenderer = new google.maps.DirectionsRenderer({
+    map,
+    suppressMarkers: true,
+    polylineOptions: {
+      strokeColor: '#E8A020',
+      strokeOpacity: 0.92,
+      strokeWeight: 4
+    }
+  });
+
+  directionsService.route({
+    origin: DELIVERY_MAP_ROUTE.origin,
+    destination: DELIVERY_MAP_ROUTE.destination,
+    travelMode: google.maps.TravelMode.DRIVING
+  }, (result, status) => {
+    if (status === 'OK') {
+      directionsRenderer.setDirections(result);
+      shell.classList.add('google-ready');
+    }
+  });
+
+  new google.maps.Marker({
+    position: DELIVERY_MAP_ROUTE.origin,
+    map,
+    title: DELIVERY_MAP_ROUTE.origin.label,
+    icon: {
+      path: google.maps.SymbolPath.CIRCLE,
+      scale: 6,
+      fillColor: '#22c55e',
+      fillOpacity: 1,
+      strokeColor: '#0F1923',
+      strokeWeight: 2
+    }
+  });
+
+  new google.maps.Marker({
+    position: DELIVERY_MAP_ROUTE.destination,
+    map,
+    title: DELIVERY_MAP_ROUTE.destination.label,
+    icon: {
+      path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
+      scale: 6,
+      fillColor: '#ef4444',
+      fillOpacity: 1,
+      strokeColor: '#0F1923',
+      strokeWeight: 2
+    }
+  });
+};
+
+/* Init */
+renderPackages('all');
+bootDeliveryMap();
+</script>
+
+</body>
+</html>

@@ -2415,26 +2415,51 @@ async function submitVariation() {
     _replyto: payload.email || undefined,
     ...payload
   };
-  try {
-    if (btn) { btn.disabled = true; btn.dataset._t = btn.textContent; btn.textContent = 'Sending…'; }
+
+  async function postFormspree() {
     const res = await fetch(FORMSPREE_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify(body)
     });
     const data = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      const detail = formSpreeErrorMessage(data) || res.statusText || 'Submit failed';
-      showVrFormError(detail);
+    return { ok: res.ok, data };
+  }
+
+  try {
+    if (btn) { btn.disabled = true; btn.dataset._t = btn.textContent; btn.textContent = 'Sending…'; }
+
+    const [fsSettled, spSettled] = await Promise.allSettled([
+      saveVariationToFirestoreCustomer(payload),
+      postFormspree()
+    ]);
+
+    const firestoreErr = fsSettled.status === 'rejected' ? fsSettled.reason : null;
+    const firestoreOk = fsSettled.status === 'fulfilled';
+    if (firestoreErr) {
+      console.error('[Firestore] customer write failed', firestoreErr?.code, firestoreErr?.message, firestoreErr);
+    }
+
+    let formspreeOk = false;
+    let formspreeData = {};
+    if (spSettled.status === 'fulfilled') {
+      formspreeOk = spSettled.value.ok;
+      formspreeData = spSettled.value.data;
+    } else {
+      console.error('[Formspree] request failed', spSettled.reason);
+    }
+
+    const formspreeDetail = !formspreeOk
+      ? (spSettled.status === 'fulfilled'
+        ? (formSpreeErrorMessage(formspreeData) || formspreeData?.error || 'Formspree submit failed')
+        : ('Formspree 네트워크 오류: ' + (spSettled.reason?.message || String(spSettled.reason))))
+      : '';
+
+    if (!formspreeOk && !firestoreOk) {
+      showVrFormError(formspreeDetail);
       return;
     }
-    let firestoreErr = null;
-    try {
-      await saveVariationToFirestoreCustomer(payload);
-    } catch (fbErr) {
-      firestoreErr = fbErr;
-      console.error('[Firestore] customer write failed', fbErr?.code, fbErr?.message, fbErr);
-    }
+
     saveEnquiryLocal(payload);
     document.getElementById('vr-form').style.display = 'none';
     document.getElementById('vr-success').style.display = 'block';
@@ -2443,12 +2468,15 @@ async function submitVariation() {
       if (firestoreErr) {
         fbWarn.style.display = 'block';
         if (firestoreErr.code === 'permission-denied') {
-          fbWarn.textContent = 'Cloud DB(Firestore) 저장이 거부됐습니다. Firebase 콘솔 → Firestore → 규칙에 이 프로젝트의 firestore.rules 내용을 반영해 주세요(비로그인 create 허용).';
+          fbWarn.textContent = 'Cloud DB(Firestore) 저장이 거부됐습니다. Firebase 콘솔 → Firestore → 규칙에 firestore.rules를 반영해 주세요.';
         } else if (firestoreErr.code === 'unavailable' || firestoreErr.code === 'failed-precondition') {
-          fbWarn.textContent = 'Firestore를 사용할 수 없습니다. Firebase 콘솔에서 Firestore 데이터베이스를 생성했는지 확인하세요.';
+          fbWarn.textContent = 'Firestore를 사용할 수 없습니다. 데이터베이스 생성 여부를 확인하세요.';
         } else {
           fbWarn.textContent = 'Cloud DB 동기화 실패: ' + (firestoreErr.message || firestoreErr.code || 'unknown');
         }
+      } else if (!formspreeOk && firestoreOk) {
+        fbWarn.style.display = 'block';
+        fbWarn.textContent = 'Formspree 전송은 실패했지만 Firestore customer에 새 문서가 추가됐습니다. 콘솔에서 최신 문서 ID를 확인하세요. · ' + formspreeDetail;
       } else {
         fbWarn.style.display = 'none';
         fbWarn.textContent = '';

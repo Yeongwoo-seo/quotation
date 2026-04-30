@@ -3,12 +3,10 @@ service cloud.firestore {
   match /databases/{database}/documents {
     // FrameOS → customer: company, name, phone, email, message (모두 string)
     match /customer/{document} {
-      allow create: if
-        request.resource.data.company is string
-        && request.resource.data.name is string
-        && request.resource.data.phone is string
-        && request.resource.data.email is string
-        && request.resource.data.message is string;
+      // 필수 키만 확인(타입은 클라이언트에서 string으로 보냄). 규칙이 너무 빡세면 permission-denied 납니다.
+      allow create: if request.resource.data.keys().hasAll([
+        'company', 'name', 'phone', 'email', 'message'
+      ]);
       allow read, update, delete: if false;
     }
   }

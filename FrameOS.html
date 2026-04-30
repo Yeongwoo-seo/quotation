@@ -1982,10 +1982,12 @@ const firebaseConfig = {
     if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
     }
-    const db = firebase.firestore();
     try {
-      db.settings({ experimentalAutoDetectLongPolling: true });
-    } catch (_) { /* settings only once / older SDK */ }
+      if (!window.__frameOSFirestoreSettingsDone) {
+        firebase.firestore().settings({ experimentalForceLongPolling: true });
+        window.__frameOSFirestoreSettingsDone = true;
+      }
+    } catch (_) { /* settings only once per page */ }
     try {
       firebase.analytics();
     } catch (_) { /* iframe / blocker */ }
@@ -2008,6 +2010,9 @@ async function saveVariationToFirestoreCustomer(payload) {
     throw e;
   }
   const db = firebase.firestore();
+  try {
+    await db.enableNetwork();
+  } catch (_) {}
   const messageText = [
     `[FrameOS Variation]`,
     `ID: ${payload.id}`,
@@ -2016,13 +2021,15 @@ async function saveVariationToFirestoreCustomer(payload) {
     '',
     payload.note
   ].join('\n');
-  await db.collection('customer').add({
+  const row = {
     company: 'FrameOS',
     name: String(payload.name || ''),
     phone: String(payload.phone || ''),
     email: String(payload.email || ''),
     message: messageText
-  });
+  };
+  const ref = await db.collection('customer').add(row);
+  console.info('[Firestore] customer 문서 생성:', ref.id);
 }
 
 /* ===== Mock data for packages ===== */
@@ -2406,7 +2413,11 @@ async function submitVariation() {
   const hp = form?.querySelector('[name="_gotcha"]');
   if (hp?.value) return;
 
-  if (form && typeof form.reportValidity === 'function' && !form.reportValidity()) return;
+  if (form && typeof form.reportValidity === 'function' && !form.reportValidity()) {
+    const bad = form.querySelector(':invalid');
+    bad?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    return;
+  }
 
   const btn = document.querySelector('#vr-form .btn-primary.btn-block');
   const payload = collectVariationPayload();
@@ -2468,7 +2479,7 @@ async function submitVariation() {
       if (firestoreErr) {
         fbWarn.style.display = 'block';
         if (firestoreErr.code === 'permission-denied') {
-          fbWarn.textContent = 'Cloud DB(Firestore) 저장이 거부됐습니다. Firebase 콘솔 → Firestore → 규칙에 firestore.rules를 반영해 주세요.';
+          fbWarn.textContent = 'Firestore 저장이 거부됐습니다(permission-denied). 콘솔 규칙에서 customer create 허용·App Check 사용 시 웹 앱 등록 여부를 확인하세요.';
         } else if (firestoreErr.code === 'unavailable' || firestoreErr.code === 'failed-precondition') {
           fbWarn.textContent = 'Firestore를 사용할 수 없습니다. 데이터베이스 생성 여부를 확인하세요.';
         } else {

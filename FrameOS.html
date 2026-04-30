@@ -1995,7 +1995,7 @@ const firebaseConfig = {
   }
 })();
 
-/** Maps variation enquiry → Firestore `customer` schema (company, email, message, name, phone). */
+/** Maps variation enquiry → Firestore `customer`: company, name, phone, email, message (순서 고정). */
 async function saveVariationToFirestoreCustomer(payload) {
   if (typeof firebase === 'undefined') {
     const e = new Error('Firebase SDK not loaded');
@@ -2008,7 +2008,7 @@ async function saveVariationToFirestoreCustomer(payload) {
     throw e;
   }
   const db = firebase.firestore();
-  const message = [
+  const messageText = [
     `[FrameOS Variation]`,
     `ID: ${payload.id}`,
     `Panel: ${payload.panel}`,
@@ -2018,10 +2018,10 @@ async function saveVariationToFirestoreCustomer(payload) {
   ].join('\n');
   await db.collection('customer').add({
     company: 'FrameOS',
-    email: String(payload.email || ''),
     name: String(payload.name || ''),
     phone: String(payload.phone || ''),
-    message
+    email: String(payload.email || ''),
+    message: messageText
   });
 }
 

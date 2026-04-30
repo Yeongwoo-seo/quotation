@@ -1,14 +1,14 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Variation enquires from FrameOS (client writes only documented string fields).
+    // FrameOS → customer: company, name, phone, email, message (모두 string)
     match /customer/{document} {
       allow create: if
         request.resource.data.company is string
-        && request.resource.data.email is string
-        && request.resource.data.message is string
         && request.resource.data.name is string
-        && request.resource.data.phone is string;
+        && request.resource.data.phone is string
+        && request.resource.data.email is string
+        && request.resource.data.message is string;
       allow read, update, delete: if false;
     }
   }
